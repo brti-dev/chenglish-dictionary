@@ -1,0 +1,460 @@
+
+BODY, HTML {
+	min-width: 500px;
+	margin: 0;
+	padding: 0;
+}
+BODY {
+	background-color: white;
+	background-repeat: no-repeat;
+	background-position: left top;
+}
+
+BODY, TH, TD {
+	font-size: 17px;
+	text-align: left;
+}
+
+A {
+	color: #03C;
+}
+A:HOVER {
+	color: #359AFF;
+}
+A:ACTIVE {
+	color: red;
+}
+A:VISITED {
+	color: purple;
+}
+
+#htmlbody {
+	padding: 30px;
+}
+
+#page {}
+
+#header { position:relative; }
+
+H1 {
+	margin: 0 0 30px;
+	padding: 0;
+}
+H1 A {
+	display: block;
+	height: 80px;
+	width: 80px;
+	text-decoration: none;
+	font-size: 8px;
+	background: url(/assets/img/heading.png) no-repeat 0 0;
+}
+H1 A SPAN {
+	visibility: hidden;
+}
+
+#search {
+	float: left;
+}
+
+#vocablist { margin:0 0 0 235px; }
+#vocablist SELECT { margin:2px 0 0; }
+
+/*#nav > UL {
+	margin: 0 0 0 235px;
+	padding: 0;
+	list-style: none;
+}
+#nav > UL > LI {
+	float: left;
+	margin: 2px 0 5px;
+	padding: 0;
+	background: url(/assets/img/white_bg_80.png) repeat 0 0;
+}
+#nav LI A {
+	position: relative;
+	z-index: 98;
+	display: block;
+	padding: 3px 8px 3px 18px;
+	font: bold 14px Arial;
+	color: #03C !important;
+	border: 1px solid #DDD;
+	background: url(/assets/img/arrow-down-point.png) no-repeat 7px center;
+}
+#nav LI A:HOVER {
+	border-color: #AAA;
+	background-color: white;
+	z-index:99;
+}
+
+#nav LI UL {
+	display:none;
+	position:absolute; z-index:98;
+	width:300px;
+	margin:0; padding:0;
+	list-style:none;
+}
+#nav LI UL LI {
+	float:left;
+	width:50%; overflow:hidden;
+	margin:0; padding:0;
+	background-color:white;
+}
+#nav LI UL LI A {
+	margin:-1px -1px 0 0;
+	font-weight: normal;
+	background-image: url(/assets/img/arrow-small-gray-right.png);
+	white-space:nowrap; 
+}*/
+
+#login {
+	position: absolute;
+	top: 0;
+	left: 235px;
+	border: 1px solid #DDD;
+}
+#login .container {
+	padding: 1px 5px 5px;
+	background: url(/assets/img/white_bg_80.png) repeat 0 0;
+}
+#login TH, #login TD {
+	font-size: 14px;
+	font-family: Arial;
+}
+#login TH {
+	font-weight: bold;
+}
+
+#footer {
+	margin: 30px 0;
+	padding: 3px 0 0;
+	border-top: 1px solid #CCC;
+}
+
+/* form styles */
+
+FORM {
+	margin: 0; }
+FIELDSET {
+	margin-left:0; margin-right:0;
+	padding:10px;
+	font-family:Arial;
+	border: 1px solid #CCC;
+}
+LEGEND {
+	font-size: 14px;
+	color: #666;
+}
+INPUT[type=text], INPUT[type=password], TEXTAREA, SELECT {
+	padding: 3px 1px 3px 3px;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #777 #CCC #CCC #777;
+}
+INPUT[type=text].focused, INPUT[type=password].focused, TEXTAREA.focused, SELECT.focused {
+	border-color: #444;
+}
+INPUT[type=text], INPUT[type=password] {
+	font-size: 13px;
+	font-family: Arial;
+}
+.inpfw {
+	margin-right: 6px;
+}
+.inpfw INPUT[type=text], .inpfw INPUT[type=password], .inpfw TEXTAREA, .inpfw SELECT {
+	width: 100%;
+}
+SELECT {
+	padding: 2px;
+	font-family: Arial;
+	font-size: 13px;
+}
+OPTGROUP {
+	padding-top: 2px;
+	font-weight: normal;
+	font-style: italic;
+	font-family: Arial;
+	color: #777;
+	background-color: #EEE;
+}
+OPTGROUP > OPTION {
+	padding-left: 20px;
+	background-color: #FFF;
+	color: black;
+}
+OPTGROUP > OPTION:first-child {
+	margin-top: 2px;
+}
+INPUT[type=button], BUTTON, INPUT[type=submit], INPUT[type=reset] {
+	padding-top: 2px;
+	padding-bottom: 2px;
+	font-size: 13px;
+	font-family: Arial;
+	background: #DDD url(/assets/img/styled-button-bg.png) repeat-x 0 0;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #BBB #AAA #AAA #BBB;
+	cursor: pointer; }
+INPUT[type=button].over, INPUT[type=submit].over, INPUT[type=reset].over {
+	border-color: #777;
+}
+.redborder INPUT[type=button].over, .redborder INPUT[type=submit].over, .redborder INPUT[type=reset].over {
+	border-color: #DB0F0F;
+}
+INPUT[type=button].down, INPUT[type=submit].down, INPUT[type=reset].down {
+	border-color: #222 #999 #999 #222;
+}
+
+#tooltip {
+	position: absolute;
+	z-index: 99;
+	max-width: 320px;
+	margin: 5px 0 0;
+	padding: 2px 5px;
+	border: 1px solid #333;
+	background: #f7f5d1;
+	font-size: 12px;
+	font-family: Arial,STXihei,STHeiti,SimSun,PMingLiU,SimHei;
+	color: #333;
+	display: none;
+}
+
+.arrow-toggle {
+	padding: 0 0 0 10px;
+	background: url(/assets/img/arrow-left-point.png) no-repeat 2px 50%;
+}
+.arrow-toggle-on {
+	background: url(/assets/img/arrow-down-point.png) no-repeat 0 50%; !important;
+}
+
+/* general styles */
+
+H2 {
+	background-color:white;
+	border:1px solid #DDDDDD;
+	font-family: Georgia,Helvetica,Arial,STXihei,STHeiti,SimSun,PMingLiU,SimHei,"Arial Unicode MS","TITUS Cyberbit Basic","Bitstream Cyberbit","Lucida Sans Unicode",Sans-Serif;
+	font-size:31px;
+	font-weight:normal;
+	margin:20px 0;
+	padding:2px 8px;
+}
+
+.resetonfocus {
+	font-style: italic;
+	color: #AAA;
+}
+
+TABLE.results {
+	border-width: 0 0 1px 1px;
+	border-style: solid;
+	border-color: #CCC;
+}
+TABLE.results TR.over TD {
+	background-color: #FFFFB7;
+}
+TABLE.results TH, TABLE.results TD {
+	padding: 6px 8px;
+	border-width: 1px 1px 0 0;
+	border-style: solid;
+	border-color: #CCC;
+	background-color: white;
+}
+TABLE.results TH {
+	font-weight: normal;
+	color: #666;
+	text-align: left;
+	white-space: nowrap;
+	background-color: #EEE;
+}
+.hz {
+	font-family:標楷體,Helvetica,Arial,STXihei,STHeiti,SimSun,PMingLiU,SimHei,"Arial Unicode MS","TITUS Cyberbit Basic","Bitstream Cyberbit","Lucida Sans Unicode",Sans-Serif;
+}
+BIG.hz {
+	font-size: 200%;
+}
+.hz A {
+	text-decoration: none;
+}
+.results TD .hz { display:block; width:159px; }
+
+.fjsw {
+	padding: 0 2px;
+}
+#toggcontr .sw-on {
+	background-color: #FFFF9F;
+}
+
+.vocablist DL {
+	width:90%;
+	margin: 10px 0 0;
+	padding: 5px 0 20px;
+}
+.vocablist DL DT { margin:0; padding:0; }
+.vocablist DT .num {
+	display: none;
+}
+.vocablist BIG.hz {
+	font-size: 55px;
+}
+.vocablist .hz-ft {
+	display: none;
+}
+.vocablist DL DD {
+	margin:5px 0 0; padding:0;
+	clear: both;
+}
+.vocablist DL DD.pinyin {
+	margin-left: 0;
+}
+.vocablist DL DD.pinyin TD {
+	width: 55px;
+	white-space: nowrap;
+	text-align: center;
+	font: normal 14px Arial;
+}
+.vocablist DL DD.definitions, .vocablist DL DD.compounds {
+	padding: 0 0 0 23px;
+	background: url(/assets/img/arrow-small-gray-right.png) no-repeat 10px 8px;
+	font-family:Helvetica,Arial,STXihei,STHeiti,SimSun,PMingLiU,SimHei;
+}
+
+.vocablist .extras {}
+.vocablist .extras UL { clear:both; height:23px; margin:0; padding:0; list-style:none; }
+.vocablist .extras UL + UL { margin:8px 0 0; }
+.vocablist .fcards .extras UL + UL { margin:15px 0 0; }
+.vocablist .extras UL LI { float:left; }
+.vocablist .extras UL LI A {
+	display: block;
+	margin:0 8px 0 0;
+	padding: 3px 8px;
+	font-size:13px; font-family:Arial; color: #03C;
+	border:1px solid #CCC; border-radius:2px; -moz-border-radius:2px; -webkit-border-radius:2px;
+}
+.vocablist .extras UL LI A:HOVER { background-color:#CCC; }
+
+.vocablist .fcards LI.mark { position:absolute; top:8px; right:0; }
+.vocablist .fcards LI.known { right:40px; }
+.vocablist .extras LI.mark A { background:url(/assets/img/gradient_green_sm.png) repeat-x 0 0; }
+.vocablist .extras LI.mark A:HOVER { background-position:0 -38px; }
+.vocablist .extras LI.unknown A { background-image:url(/assets/img/gradient_red_sm.png); }
+.vocablist .extras LI.marked A { background-image:none !important; background-color:#CCC; }
+
+.vocablist DL DT.toggle-vis .hz, .vocablist DL DD.toggle-vis {
+	visibility: hidden;
+}
+
+.vocablist .fcards {
+	position: relative;
+	width: 740px;
+	height: 600px;
+	overflow: hidden;
+	margin: 0 auto;
+}
+.vocablist .fcards .fcnav {
+	position: absolute;
+	top: 100px;
+	z-index: 1;
+	width: 24px;
+	height: 20px;
+	background: url(/assets/img/key_left.png) no-repeat 0 0;
+}
+.vocablist .fcards .fcnav-prev {}
+.vocablist .fcards .fcnav-next {
+	background: url(/assets/img/key_right.png) no-repeat 0 0;
+	right: 0;
+}
+.vocablist .fcards > .container {}
+.vocablist .fcards > .container .thelist {
+	position: absolute;
+	left: 0px;
+	width: 100%;
+	height: 600px;
+}
+.vocablist .fcards DL {
+	display: none;
+	position:absolute; z-index:1;
+	float: left;
+	width: 600px;
+	margin: 0 29px 300px 28px;
+	padding: 40px;
+	text-align: center;
+	border-width: 1px 2px 2px 1px;
+	border-style: solid;
+	border-color: #DDD #BBB #BBB #DDD;
+}
+.vocablist .fcards DL.fcnav-curr {
+	display: block;
+}
+.vocablist .fcards DT .num {
+	display: block;
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	font: normal 13px arial;
+	color: #777;
+}
+.vocablist .fcards BIG.hz {
+	font-family: Helvetica,Arial,"標楷體",STXihei,STHeiti,SimSun,PMingLiU,SimHei,"Arial Unicode MS","TITUS Cyberbit Basic","Bitstream Cyberbit","Lucida Sans Unicode",Sans-Serif;
+	font-size: 115px;
+}
+.vocablist .fcards .ftz {
+	display: block;
+	margin: 0;
+}
+.vocablist .fcards .ftz .paren {
+	display: none;
+}
+.vocablist .fcards .pinyin TABLE {
+	margin: 0 auto;
+}
+.vocablist .fcards .pinyin TD {
+	width: 116px;
+	font-size: 15px;
+}
+.vocablist .fcards .definitions {
+	margin: 15px 0 0;
+	padding: 15px 0 0;
+	border-top: 1px solid #DDD;
+	background-image: none;
+	text-align: left;
+}
+.vocablist .fcards .compounds {
+	margin:15px -10px 0; padding:4px 10px;
+	background-image:none; background-color:#EEE;
+	text-align:left; color:#999;
+}
+.vocablist .fcards .extras {
+	margin: 15px 0 0;
+	border-width: 1px 0 0;
+}
+.vocablist .fcards .extras UL {}
+.vocablist .fcards .extras UL LI {}
+.vocablist .fcards .extras UL LI A {}
+
+TABLE.vocab-aded {}
+TABLE.vocab-aded TH {
+	padding: 30px 20px 0 0;
+	text-align: right;
+	vertical-align: top;
+}
+TABLE.vocab-aded TD {
+	padding:30px 0 0;
+}
+TABLE.vocab-aded TBODY TR:first-child TD, TABLE.vocab-aded TBODY TR:first-child TH { padding-top:0 !important; }
+
+#box {
+	display:none;
+	position:fixed; z-index:2; top:5%; left:50%;
+	width:400px;
+	max-height:80%; overflow:auto;
+	margin:0 0 0 -200px;
+	padding:20px;
+	border:5px solid black; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px;
+	box-shadow:0 0 5px 0 black; -moz-box-shadow:0 0 5px 0 black; -webkit-box-shadow:0 0 5px 0 black;
+	background-color:white;
+	opacity:.92;
+}
+#box, #box TD, #box TH { font-size:13px; font-family:Arial; }
+#box > A { float:right; color:#E32828; }
+#box H2 { margin:0 0 10px; padding:0 0 10px; border-width:0 0 1px; }
+
+#listcontrols A:HOVER IMG { opacity:.7 !important; }

@@ -1,0 +1,7 @@
+*error_log
+*.log
+log
+config*
+.ht*
+composer.phar
+/vendor/
