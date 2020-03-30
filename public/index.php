@@ -1,28 +1,21 @@
 <?php
 
-require_once (__DIR__."/../src/class.page.php");
-$page = new page;
-require_once (__DIR__."/../src/PrimezeroTools.php");
+require '../vendor/autoload.php';
+
+use Pced\PrimezeroTools;
 $cn = new PrimezeroTools();
 
-$page->header(); 
+require_once __DIR__."/../config/config_app.php";
+
+include __DIR__."/../templates/page_header.php";
 
 ?>
 <h2><span class="hz" style="font-size:60px; opacity:.85;">欢迎光临!</span></h2>
 
 <div style="line-height:1.5em">
 
-<b>PCED is a simple Chinese-English Dictionary powered by <a href="http://cc-cedict.org/" target="_blank">CC-CEDICT</a> with the additional function of creating, saving, producing, and managing highly functional vocabulary lists for personal use and study.</b>
-Although there are <a href="http://mdbg.net/chindict/chindict.php" title="MDBG Chinese-English Dictionary">already</a> <a href="http://dianhuadictionary.com/" title="Dianhua Chinese-English Dictionary">several</a> <a href="http://nciku.com" title="Nciku Chinese-English Dictionary">great</a> C-E dictionaries published on 
-the internet, none of them give efficient and effective means to reproduce personal vocabulary lists on your computer or mobile device.
-
-<p><div style="margin:0 -5px; padding:5px; background-color:#EEE;">
-	<?
-	if($_SERVER['HTTP_HOST'] == "cn-en-m.dreamhosters.com")
-		echo 'You are currently using <b>PCED MOBILE</b>. <a href="http://cn-en.dreamhosters.com">Switch to the Full Version</a>.';
-	else echo 'You are currently using <b>PCED FULL VERSION</b>, meant for use on your computer. <a href="http://cn-en-m.dreamhosters.com">Switch to the Mobile Version</a>';
-	?>
-</div></p>
+<p><b>PCED is a simple Chinese-English Dictionary powered by <a href="http://cc-cedict.org/" target="_blank">CC-CEDICT</a> with the additional function of creating, saving, producing, and managing highly functional vocabulary lists for personal use and study.</b>
+Although there are <a href="http://mdbg.net/chindict/chindict.php" title="MDBG Chinese-English Dictionary">already</a> <a href="http://dianhuadictionary.com/" title="Dianhua Chinese-English Dictionary">several</a> <a href="http://nciku.com" title="Nciku Chinese-English Dictionary">great</a> C-E dictionaries published on the internet, none of them give efficient and effective means to reproduce personal vocabulary lists on your computer or mobile device.</p>
 
 <p>To begin, search for a term in the form field above.</p>
 
@@ -32,7 +25,7 @@ the internet, none of them give efficient and effective means to reproduce perso
 
 <h3 style="margin:20px 0 5px; padding: 20px 0 0; border-top:1px solid #CCC;">Random Dictionary Entry</h3>
 <dl>
-	<?
+	<?php
 	$q = "SELECT * FROM zhongwen LIMIT ".rand(0, 91678).", 1";
 	$row = mysqli_fetch_assoc(mysqli_query($db['link'], $q));
 	$row['definitions'] = preg_replace("@^/|/$@", "", $row['definitions']);
@@ -44,6 +37,6 @@ the internet, none of them give efficient and effective means to reproduce perso
 </dl>
 <?
 
-$page->footer();
+include __DIR__."/../templates/page_footer.php";
 
 ?>

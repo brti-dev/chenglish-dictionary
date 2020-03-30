@@ -5,8 +5,6 @@ window.onbeforeunload = function() {
 
 $(document).ready(function(){
 	
-	var ver = $("#ver").val();
-	
 	$(".resetonfocus").each(function() {
 		var ival = $(this).val();
 		$(this).focus(function() {

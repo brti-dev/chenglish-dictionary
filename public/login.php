@@ -1,155 +1,127 @@
-<?
-require_once (__DIR__."/../src/class.page.php");
-$page = new page;
-	
-if(isset($_COOKIE['remember_usrid']) && isset($_COOKIE['remember_usrpass'])) {
-	
-	//login user from remembered cookie
-	
-	$pass = base64_decode($_COOKIE['remember_usrpass']);
-	$q = "SELECT * FROM users WHERE usrid='".mysqli_real_escape_string($db['link'], $_COOKIE['remember_usrid'])."' AND password='".mysqli_real_escape_string($db['link'], $pass)."' LIMIT 1";
-	$res = mysqli_query($db['link'], $q);
-	if($userdat = mysqli_fetch_object($res)) {
-		
-		if(!$_SESSION['usrid'] = $userdat->usrid) $errors[] = "Couldn't set session variable 'usrid'.";
-		
-		if(!$errors) {
-			//update activity
-			$q2 = "UPDATE users SET last_login='".date("Y-m-d H:i:s")."', last_login_2='".$userdat->last_login."' WHERE usrid='".$_SESSION['usrid']."' LIMIT 1";
-			mysqli_query($db['link'], $q2);
-		}
-		
+<?php
+
+require '../vendor/autoload.php';
+
+use Pced\User;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
+require_once (__DIR__."/../src/configure.php");
+
+/**
+ * Filter POST vars & hash password
+ * @return array $email, $password, $password_hash
+ */
+function validateUserInput() {
+
+	$email = filter_input(INPUT_POST, "email", FILTER_VALIDATE_EMAIL);
+	if (!$email) {
+		throw new Exception('The e-mail address <i>'.$email.'</i> couldn\'t be validated. Please try again!');
 	}
+	
+	$password = filter_input(INPUT_POST, "password");
+	if (!$password) {
+		throw new Exception('Password is required.');
+	}
+
+	$password_hash = password_hash($password, PASSWORD_DEFAULT);
+	if ($password_hash === false) {
+		throw new Exception('Password hash failure!');
+	}
+
+	return array($email, $password, $password_hash);
 
 }
 
 //login
-if(isset($_POST['submit_login'])) {
-	
-	$email = $_POST['email'];
-	$pass  = $_POST['password'];
-	
-	if(!$email || !$pass) {
-		$page->title .= " / Login";
-		$page->header();
-		?>
-		<h2>Error logging in</h2>
-		Please input both an e-mail address and password.
-		<?
-		$page->footer();
-		exit;
-	}
-	//validate email
-	if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-		$page->title .= " / Login";
-		$page->header();
-		?>
-		<h2>Error logging in</h2>
-		The e-mail address <i><?=$email?></i> isn't valid.
-		<?
-		$page->footer();
-		exit;
-	}
-	
-	$q = sprintf("SELECT * FROM `users` WHERE `email` = '%s' AND `password` = '%s' LIMIT 1",
-		mysqli_real_escape_string($db['link'], $email),
-		mysqli_real_escape_string($db['link'], $pass));
-	$res = mysqli_query($db['link'], $q);
-	if(mysqli_num_rows($res)) {
-		
-		if(!$userdat = mysqli_fetch_object($res)) die("Error: Couldn't get user data");
-		if(!$_SESSION['usrid'] = $userdat->usrid) die("Couldn't set session variable 'usrid'.");
-		
-		//remember?
-		if($_POST['remember']) {
-			// time()+60*60*24*100 = 100 days
-			setcookie("remember_usrid", $_SESSION['usrid'], time()+60*60*24*100, "/");
-			setcookie("remember_usrpass", base64_encode($pass), time()+60*60*24*100, "/");
+if (isset($_POST['submit_login'])) {
+
+	try {
+		[$email, $password, $password_hash] = validateUserInput();
+
+		$user = User::getByEmail($email, $GLOBALS['pdo']);
+
+		if (password_verify($password, $user->data['password']) === false) {
+			throw new Exception('Invalid password');
 		}
-		
+
+		// Re-hash password if necessary
+		$currentHashAlgorithm = PASSWORD_DEFAULT;
+		$passwordNeedsRehash = password_needs_rehash(
+			$user->data['password'],
+			$currentHashAlgorithm
+		);
+		if ($passwordNeedsRehash === true) {
+			// Save new password hash
+			$user->data['password'] = password_hash(
+				$password,
+				$currentHashAlgorithm
+			);
+			$user->save();
+		}
+
+		$_SESSION['logged_in'] = 'true';
+		$_SESSION['email'] = $email;
+
+		if($_POST['remember']) {}
+
 		//update activity
-		$q2 = "UPDATE users SET last_login='".date("Y-m-d H:i:s")."', last_login_2='".$userdat->last_login."' WHERE usrid='".$_SESSION['usrid']."' LIMIT 1";
-		mysqli_query($db['link'], $q2);
+		$user->data['last_login_2'] = $user->data['last_login'];
+		$user->data['last_login'] = date("Y-m-d H:i:s");
+		$user->save();
 		
 		$ref = $_SERVER['HTTP_REFERER'];
 		if(strstr($ref, "login.php")) $ref = "/";
-		header("Status: 303");
+
+		header("HTTP/1.1 302 Redirect");
 		header("Location: ".$ref);
-		exit;
-		
-	} else {
-		
-		// failed login
-		
-		// email exists?
-		$q = "SELECT * FROM `users` WHERE `email` = '".mysqli_real_escape_string($db['link'], $email)."' LIMIT 1";
-		if(!mysqli_num_rows(mysqli_query($db['link'], $q))) {
-			
-			// REG FORM //
-			
-			$page->title.= " / Register";
-			$page->header();
+
+	} catch (Exception $e) {
+		$page_title = APP_NAME .  " / Login";
+		include __DIR__."/../templates/page_header.php";
+
+		if ($e->getCode() == 439) {
+			// Email couldn't be found
+			// Offer option to register it!
 			?>
 			<h2>Register</h2>
-			The e-mail address <i><?=$email?></i> is not yet registered. Would you like to register now?<br/><br/>
+			<p>The e-mail address <i><?=$email?></i> is not yet registered. Would you like to register now?</p>
 			<form action="login.php" method="post">
 				<input type="hidden" name="email" value="<?=$email?>"/>
-				<input type="hidden" name="password" value="<?=$pass?>"/>
-				<input type="hidden" name="remember" value="<?=$_POST['remember']?>"/>
-				<input type="hidden" name="ref" value="<?=$_SERVER['HTTP_REFERER']?>"/>
-				<input type="submit" name="submit_reg" value="Submit Registration" style="font-size:15px; font-weight:bold;"/>
+				<input type="submit" name="submit_registration" value="Submit Registration" style="font-size:15px; font-weight:bold;"/>
 			</form>
 			<?
-			$page->footer();
+			include __DIR__."/../templates/page_footer.php";
 			exit;
-			
 		} else {
-		
-			setcookie(session_name(), '', time()-42000, '/');
-			setcookie("remember_usrid", "", time()-60*60*24*100, "/");
-			setcookie("remember_usrpass", "", time()-60*60*24*100, "/");
-			unset($_SESSION['usrid']);
-			session_destroy();
-			
-			$page->title.= " / Log in";
-			$page->header();
 			?>
-			<h2>Wrong Password</h2>
-			The password you entered is incorrect.
+			<h2>Error logging in</h2>
+			<p><?=$e->getMessage()?></p>
 			<?
-			$page->footer();
-			exit;
+			include __DIR__."/../templates/page_footer.php";
 		}
-		
+		exit;
 	}
 }
 
-if(isset($_POST['submit_reg'])) {
+// User wanna register
+
+if(isset($_POST['submit_registration'])) {
 	
-	//SUBMIT REG//
-	
-	$email = $_POST['email'];
-	$pass  = $_POST['password'];
-	
-	if(!$email || !$pass) {
-		$page->title .= " / Login";
-		$page->header();
+	try {
+
+		[$email, $password, $password_hash] = validateUserInput();
+		
+		
+
+	} catch (Exception $e) {
+		$page_title = APP_NAME .  " / Login Error";
+		include __DIR__."/../templates/page_header.php";
 		?>
-		<h2>Error</h2>
-		Please input both an e-mail address and password.
+		<h2>Error logging in</h2>
+		<p><?=$e->getMessage()?></p>
 		<?
-		$page->footer();
-		exit;
-	}
-	//validate email
-	if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-		$page->title .= " / Login";
-		$page->header();
-		?>
-		<h2>Error</h2>
-		The e-mail address <i><?=$email?></i> isn't valid.
-		<?
-		$page->footer();
+		include __DIR__."/../templates/page_footer.php";
 		exit;
 	}
 	
@@ -188,14 +160,14 @@ if(isset($_POST['submit_reg'])) {
 	
 	if(strstr($_POST['ref'], "login.php")) $_POST['ref'] = "/";
 	
-	$page->title .= " / Register";
-	$page->header();
+	$page_title = APP_NAME .  " / Register";
+	include __DIR__."/../templates/page_header.php";
 	?>
 	<h2>Successful Registration</h2>
 	You have been successfully registered and your first vocab lists have been created: <a href="/vocab.php?tag=General+Vocab">General Vocab</a> and <a href="/vocab.php?tag=Measure+Words">Measure Words</a>. To add to these lists, or to create a new list, search for something in the search field above.
 	<p><a href="<?=$_POST['ref']?>">Back to where you came from</a></p>
 	<?
-	$page->footer();
+	include __DIR__."/../templates/page_footer.php";
 	exit;
 	
 }

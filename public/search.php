@@ -1,14 +1,19 @@
 <?php
 
-require_once (__DIR__."/../src/class.page.php");
-$page = new page;
+require '../vendor/autoload.php';
+
+use Pced\PrimezeroTools;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
+require_once (__DIR__."/../src/configure.php");
 require_once (__DIR__."/../src/PrimezeroTools.php");
 $pz = new PrimezeroTools();
 
 $_GET['query'] = trim($_GET['query']);
 $q = str_replace("*", "%", $_GET['query']);
 
-$page->header();
+include __DIR__."/../templates/page_header.php";
 
 ?>
 <h2>Search</h2>
@@ -16,7 +21,7 @@ $page->header();
 
 if(!$q) {
 	echo "Input a search term in the form field above.";
-	$page->footer();
+	include __DIR__."/../templates/page_footer.php";
 	exit;
 }
 
@@ -48,9 +53,9 @@ if($_SESSION['usrid']) {
 	
 	// search vocab list
 	
-	$query = "SELECT * FROM vocab WHERE usrid='".$_SESSION['usrid']."' AND ";
-	if($_GET['in_defs']) $query.= "definitions LIKE '%".str_replace("%", "", $q)."%' OR ";
-	if($hz) $query.= "(hanzi_jt LIKE '$q' OR hanzi_ft LIKE '$q') ";
+	$query = "SELECT * FROM vocab WHERE usrid='".(int)$_SESSION['usrid']."' AND ";
+	if($_GET['in_defs']) $query.= "definitions LIKE '%".str_replace("%", "", mysqli_real_escape_string($db['link'], $q))."%' OR ";
+	if($hz) $query.= "(hanzi_jt LIKE '".mysqli_real_escape_string($db['link'], $q)."' OR hanzi_ft LIKE '".mysqli_real_escape_string($db['link'], $q)."') ";
 	else $query.= "pinyin_raw LIKE '$py%' ";
 	$query.= "LIMIT 0, 100";
 	$vres = mysqli_query($db['link'], $query);
@@ -74,8 +79,8 @@ if($_SESSION['usrid']) {
 }
 
 $query = "SELECT * FROM zhongwen WHERE ";
-if($_GET['in_defs']) $query.= "definitions LIKE '%".str_replace("%", "", $q)."%' OR ";
-if($hz) $query.= "hanzi_jt LIKE '$q' ";
+if($_GET['in_defs']) $query.= "definitions LIKE '%".str_replace("%", "", mysqli_real_escape_string($db['link'], $q))."%' OR ";
+if($hz) $query.= "hanzi_jt LIKE '".mysqli_real_escape_string($db['link'], $q)."' ";
 else $query.= "pinyin LIKE '$py' ";
 $query.= "LIMIT 0, 100";
 $res = mysqli_query($db['link'], $query);
@@ -128,7 +133,4 @@ if(!$numrows) {
 <?
 }
 
-$page->footer();
-
-
-?>
+include __DIR__."/../templates/page_footer.php";

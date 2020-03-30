@@ -1,7 +1,8 @@
 *error_log
 *.log
 log
-config*
+/config*.ini
 .ht*
 composer.phar
 /vendor/
+/var/

@@ -1,8 +1,17 @@
 <?php
 
-require_once (__DIR__."/../src/class.page.php");
-$page = new page;
-require_once (__DIR__."/../src/PrimezeroTools.php");
+require '../vendor/autoload.php';
+
+use Pced\PrimezeroTools;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
+require_once (__DIR__."/../src/configure.php");
+
+$_GET['query'] = trim($_GET['query']);
+$q = str_replace("*", "%", $_GET['query']);
+
+include __DIR__."/../templates/page_header.php";
 
 if($_POST['_action'] == "delete") {
 	
@@ -625,4 +634,4 @@ if($num) {
 	<?
 }
 
-$page->footer();
+include __DIR__."/../templates/page_header.php";

@@ -1,0 +1,18 @@
+{
+    "autoload": {
+        "psr-4": {
+          "Pced\\" : "src"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "require": {
+        "monolog/monolog": "2.0.*",
+        "php": "^7.3"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^0.12.18",
+        "phpunit/phpunit": "^9"
+    }
+}
