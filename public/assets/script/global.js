@@ -5,23 +5,6 @@ window.onbeforeunload = function() {
 
 $(document).ready(function(){
 	
-	$(".resetonfocus").each(function() {
-		var ival = $(this).val();
-		$(this).focus(function() {
-			if( $(this).val() == ival ) {
-				$(this).removeClass("resetonfocus").val("");
-			};
-		}).blur(function(){
-			if( $(this).val() == "" ) $(this).addClass("resetonfocus").val(ival);
-		});
-	});
-	
-	$("input[type=text], input[type=password], textarea, select").focus(function(){
-		$(this).addClass("focused");
-	}).blur(function(){
-		$(this).removeClass("focused");
-	});
-	
 	$("input[type='button'], input[type='submit'], input[type='reset']").hover(
 		function(){
 			$(this).addClass("over");
@@ -107,6 +90,12 @@ $(document).ready(function(){
 			}
 		);
 	
+	});
+
+	$("#search-input").focus(function(){
+		$('#search-info').fadeIn();
+	}).blur(function(){
+		$('#search-info').animate({opacity:1}, 200, function(){ $(this).fadeOut(); });
 	});
 	
 });

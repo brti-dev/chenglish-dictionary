@@ -3,15 +3,18 @@
 require '../vendor/autoload.php';
 
 use Pced\PrimezeroTools;
+use Pced\Vocab;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
-require_once (__DIR__."/../src/configure.php");
+require_once (__DIR__."/../config/config_app.php");
 
-$_GET['query'] = trim($_GET['query']);
-$q = str_replace("*", "%", $_GET['query']);
+$q = filter_input(INPUT_GET, "query");
+$q = trim($q);
+$q = str_replace("*", "%", $q);
 
-include __DIR__."/../templates/page_header.php";
+$page_title = APP_NAME .  " / My Vocabulary";
+$page_javascript.= "<script type=\"text/javascript\" src=\"/assets/script/vocab.js\"></script>";
 
 if($_POST['_action'] == "delete") {
 	
@@ -19,7 +22,7 @@ if($_POST['_action'] == "delete") {
 	
 	if(!$vid = $_POST['_vocabid']) die("No vocabid given");
 	
-	$q = "SELECT * FROM vocab WHERE vocabid='".mysqli_real_escape_string($db['link'], $vid)."' and usrid='$_SESSION[usrid]' LIMIT 1";
+	$q = "SELECT * FROM vocab WHERE vocabid='".mysqli_real_escape_string($db['link'], $vid)."' and user_id='$_SESSION[user_id]' LIMIT 1";
 	if(!mysqli_num_rows(mysqli_query($db['link'], $q))) die("Coudn't find that vocab entry");
 	
 	$q = "DELETE FROM tags WHERE vocabid = '".mysqli_real_escape_string($db['link'], $vid)."'";
@@ -35,7 +38,7 @@ if($_POST['_action'] == "delete") {
 if($_POST['_action'] == "mark") {
 	
 	if(!$vid = $_POST['_vocabid']) die("No vocabid given");
-	$q = "SELECT * FROM vocab WHERE vocabid='$vid' and usrid='$_SESSION[usrid]' LIMIT 1";
+	$q = "SELECT * FROM vocab WHERE vocabid='$vid' and user_id='$_SESSION[user_id]' LIMIT 1";
 	if(!$row = mysqli_fetch_assoc(mysqli_query($db['link'], $q))) {
 		die("Coudn't find that vocab entry");
 	}
@@ -51,7 +54,7 @@ if($_POST['_action'] == "mark") {
 
 /*if($_POST['_action'] == "change_frequency") {
 	if(!$vid = $_POST['_vocabid']) die("No vocabid given");
-	$q = "SELECT * FROM vocab WHERE vocabid='$vid' and usrid='$_SESSION[usrid]' LIMIT 1";
+	$q = "SELECT * FROM vocab WHERE vocabid='$vid' and user_id='$_SESSION[user_id]' LIMIT 1";
 	if(!mysqli_num_rows(mysqli_query($db['link'], $q))) {
 		die("Coudn't find that vocab entry");
 	}
@@ -68,14 +71,14 @@ if($_POST['action'] == "edit_tag"){
 	$listname = trim($_POST['listname']);
 	
 	if($_POST['removelist']){
-		$q = "DELETE FROM tags WHERE `tag` = '".mysqli_real_escape_string($db['link'], $tag)."' AND usrid = '$_SESSION[usrid]'";
+		$q = "DELETE FROM tags WHERE `tag` = '".mysqli_real_escape_string($db['link'], $tag)."' AND user_id = '$_SESSION[user_id]'";
 		if(!mysqli_query($db['link'], $q)) die("Database error removing tag");
 		header("Location: /vocab.php");
 		exit;
 	}
 	
 	if($tag != $listname && $listname != ''){
-		$q = "UPDATE tags SET `tag` = '".mysqli_real_escape_string($db['link'], $listname)."' WHERE `tag` = '".mysqli_real_escape_string($db['link'], $tag)."' AND usrid = '$_SESSION[usrid]'";
+		$q = "UPDATE tags SET `tag` = '".mysqli_real_escape_string($db['link'], $listname)."' WHERE `tag` = '".mysqli_real_escape_string($db['link'], $tag)."' AND user_id = '$_SESSION[user_id]'";
 		if(!mysqli_query($db['link'], $q)) die("Database error updating tag");
 		header("Location: /vocab.php?tag=".urlencode($listname));
 		exit;
@@ -83,13 +86,10 @@ if($_POST['action'] == "edit_tag"){
 	
 }
 
-$page->title.= " / My Vocabulary";
-$page->javascript.= '<script type="text/javascript" src="/assets/script/vocab.js"></script>';
-
-if(!isset($_SESSION['usrid'])) {
-	$page->header();
-	echo "<h2>My Vocabulary</h2>\nPlease register and/or log in to view and modify personal lists.";
-	$page->footer();
+if (!isset($_SESSION['logged_in'])) {
+	include __DIR__."/../templates/page_header.php";
+	echo "<h2>My Vocabulary</h2>\n<p>Please register and/or log in to view and modify personal lists.</p>";
+	include __DIR__."/../templates/page_footer.php";
 	exit;
 }
 
@@ -108,7 +108,7 @@ if(isset($_POST['submit_add'])) {
 			if($row = mysqli_fetch_assoc(mysqli_query($db['link'], $q))){
 				$py_raw = $row['pinyin'];
 				$py     = $pz->pzpinyin_tonedisplay_convert_to_mark($py_raw);
-				$q = "INSERT INTO vocab (usrid, hanzi_ft, hanzi_jt, pinyin, pinyin_raw, definitions) VALUES ('".$_SESSION['usrid']."', '".mysqli_real_escape_string($db['link'], $row['hanzi_ft'])."', '".mysqli_real_escape_string($db['link'], $row['hanzi_jt'])."', '".mysqli_real_escape_string($db['link'], $py)."', '".mysqli_real_escape_string($db['link'], $py_raw)."', '".mysqli_real_escape_string($db['link'], $row['definitions'])."');";
+				$q = "INSERT INTO vocab (user_id, hanzi_ft, hanzi_jt, pinyin, pinyin_raw, definitions) VALUES ('".$_SESSION['user_id']."', '".mysqli_real_escape_string($db['link'], $row['hanzi_ft'])."', '".mysqli_real_escape_string($db['link'], $row['hanzi_jt'])."', '".mysqli_real_escape_string($db['link'], $py)."', '".mysqli_real_escape_string($db['link'], $py_raw)."', '".mysqli_real_escape_string($db['link'], $row['definitions'])."');";
 				mysqli_query($db['link'], $q);
 			}
 		}
@@ -129,7 +129,7 @@ if(isset($_POST['submit_add'])) {
 	$py     = $pz->pzpinyin_tonedisplay_convert_to_mark($py_raw);
 	
 	$q = sprintf(
-		"INSERT INTO vocab (usrid, hanzi_ft, hanzi_jt, pinyin, pinyin_raw, definitions) VALUES ('".$_SESSION['usrid']."', '%s', '%s', '%s', '%s', '%s');",
+		"INSERT INTO vocab (user_id, hanzi_ft, hanzi_jt, pinyin, pinyin_raw, definitions) VALUES ('".$_SESSION['user_id']."', '%s', '%s', '%s', '%s', '%s');",
 		mysqli_real_escape_string($db['link'], $in['hanzi_ft']),
 		mysqli_real_escape_string($db['link'], $in['hanzi_jt']),
 		mysqli_real_escape_string($db['link'], $py),
@@ -145,10 +145,10 @@ if(isset($_POST['submit_add'])) {
 		foreach($in['tags'] as $tag) {
 			$tag = trim($tag);
 			$tag = htmlSC($tag);
-			if($tag) $tag_query.= "('".$_SESSION['usrid']."', '".mysqli_real_escape_string($db['link'], $tag)."', '$vocabid'),";
+			if($tag) $tag_query.= "('".$_SESSION['user_id']."', '".mysqli_real_escape_string($db['link'], $tag)."', '$vocabid'),";
 		}
 		if($tag_query) {
-			$tag_query = "INSERT INTO tags (usrid, tag, vocabid) VALUES ".substr($tag_query, 0, -1).";";
+			$tag_query = "INSERT INTO tags (user_id, tag, vocabid) VALUES ".substr($tag_query, 0, -1).";";
 			if(!mysqli_query($db['link'], $tag_query)) die("ERROR #INSTAGS: Couldn't tag the vocab");
 		}
 	}
@@ -172,7 +172,7 @@ if($zid = $_GET['add']) {
 		$zw->pinyin = str_replace("5", "", $zw->pinyin);
 	}
 	
-	$page->header();
+	include __DIR__."/../templates/page_header.php";
 	
 	?>
 	<h2>Add Vocab</h2>
@@ -198,7 +198,7 @@ if($zid = $_GET['add']) {
 			$addlchrs = array();
 			if(count($chrs) > 1){
 				foreach($chrs as $c){
-					$q = "SELECT * FROM vocab WHERE usrid='$_SESSION[usrid]' AND (hanzi_jt='$c' OR hanzi_ft='$c') LIMIT 1";
+					$q = "SELECT * FROM vocab WHERE user_id='$_SESSION[user_id]' AND (hanzi_jt='$c' OR hanzi_ft='$c') LIMIT 1";
 					if(!mysqli_num_rows(mysqli_query($db['link'], $q))){
 						//the character isn't in the user's vocab yet
 						//get character details and give option to add char to vocab
@@ -250,7 +250,7 @@ if($zid = $_GET['add']) {
 							<a href="#append" onclick="$(this).closest('ul').append('&#60;li style=&#34;margin:5px 0;&#34;&#62;New List: &#60;input type=&#34;text&#34; name=&#34;in[tags][]&#34; maxlength=&#34;60&#34; style=&#34;width:200px;&#34;/&#62;&#60;/li&#62;');">Add another</a>
 						</li>
 						<?
-						$query = "SELECT DISTINCT(tag) AS tag FROM tags WHERE usrid='".$_SESSION['usrid']."'";
+						$query = "SELECT DISTINCT(tag) AS tag FROM tags WHERE user_id='".$_SESSION['user_id']."'";
 						$res   = mysqli_query($db['link'], $query);
 						while($row = mysqli_fetch_assoc($res)) {
 							echo '<li style="margin:5px 0 0;"><label><input type="checkbox" name="in[tags][]" value="'.$row['tag'].'"/>'.$row['tag'].'</label></li>';
@@ -273,7 +273,7 @@ if($zid = $_GET['add']) {
 	</form>
 	<?
 	
-	$page->footer();
+	include __DIR__."/../templates/page_footer.php";
 	exit;
 	
 }
@@ -296,7 +296,7 @@ if($vid = $_POST['edit']) {
 		$zw->definitions = $zw2->definitions;
 	}*/
 	
-	if($zw->usrid != $_SESSION['usrid']) {
+	if($zw->user_id != $_SESSION['user_id']) {
 		echo "<h2>Error</h2>This vocab item doesn't seem to belong to you.";
 		exit;
 	}
@@ -417,10 +417,10 @@ if(isset($_POST['submit_edit'])) {
 		foreach($in['tags'] as $tag) {
 			$tag = trim($tag);
 			$tag = htmlSC($tag);
-			if($tag) $tag_query.= "('".$_SESSION['usrid']."', '".mysqli_real_escape_string($db['link'], $tag)."', '".mysqli_real_escape_string($db['link'], $in['vocabid'])."'),";
+			if($tag) $tag_query.= "('".$_SESSION['user_id']."', '".mysqli_real_escape_string($db['link'], $tag)."', '".mysqli_real_escape_string($db['link'], $in['vocabid'])."'),";
 		}
 		if($tag_query) {
-			$tag_query = "INSERT INTO tags (usrid, tag, vocabid) VALUES ".substr($tag_query, 0, -1).";";
+			$tag_query = "INSERT INTO tags (user_id, tag, vocabid) VALUES ".substr($tag_query, 0, -1).";";
 			if(!mysqli_query($db['link'], $tag_query)) die("ERROR #INSTAGS: Couldn't tag the vocab");
 		}
 	}
@@ -434,7 +434,7 @@ if(isset($_POST['submit_edit'])) {
 			$zw = mysqli_fetch_assoc(mysqli_query($db['link'], $q));
 			$row = array_merge($row, $zw);
 		}
-		outputVocab($row);
+		Vocab::output($row);
 	}
 	
 	exit;
@@ -445,49 +445,47 @@ if(isset($_POST['submit_edit'])) {
 // INDEX / LIST //
 //////////////////
 
-$tag = urldecode($_GET['tag']);
+$tag = filter_input(INPUT_GET, "tag");
+$tag = urldecode($tag);
 $tag = trim($tag);
-$pgtitle = $tag;
 
-$sort = trim($_GET['sort']);
-$view = trim($_GET['view']);
+$sort = filter_input(INPUT_GET, "sort");
+$sort = trim($sort);
 
-if($tag == "_singlechars") {
-	$pgtitle = "Single Characters";
+$view = filter_input(INPUT_GET, "view");
+$view = trim($view);
+
+$page_title = $tag;
+
+if ($tag == "_singlechars") {
+	$page_title = "Single Characters";
 	$slist = "singlechars";
-} elseif(substr($tag, 0, 7) == "_recent") {
+} elseif (substr($tag, 0, 7) == "_recent") {
 	$since = (int)substr($tag, 8);
-	if(!is_int($since)) $since = 1;
+	if (!is_int($since)) $since = 1;
 	$where.= " AND DATE_SUB(CURDATE(),INTERVAL $since DAY) <= vocab.`added`";
-	$pgtitle = "Recent Additions: $since day".($since != 1 ? 's' : '');
+	$page_title = "Recent Additions: $since day".($since != 1 ? 's' : '');
 	$slist = "recent";
 }
 
-if($sort == "added_desc") $orderby = "`added` DESC";
-elseif($sort == "added_asc") $orderby = "`added` ASC";
-elseif($sort == "random") $orderby = "RAND()";
+if ($sort == "added_desc") $orderby = "`added` DESC";
+elseif ($sort == "added_asc") $orderby = "`added` ASC";
+elseif ($sort == "random") $orderby = "RAND()";
 else $orderby = "`frequency` ASC, RAND()";
 
-if($tag && !$slist) {
-	$query = "SELECT * FROM tags LEFT JOIN vocab USING (vocabid) WHERE tag='".mysqli_real_escape_string($db['link'], $tag)."' AND tags.usrid='".$_SESSION['usrid']."' $where ORDER BY $orderby";
+if ($tag && !$slist) {
+	$sql = "SELECT * FROM tags LEFT JOIN vocab USING (vocabid) WHERE tag=':tag' AND tags.user_id='".$current_user->getId()."' $where ORDER BY $orderby";
+	$statement = $pdo->prepare($sql);
+	$statement->bind(":tag", $tag);
 } else {
-	if(!$pgtitle) $pgtitle = "My Vocab";
-	$query = "SELECT * FROM vocab WHERE usrid='".$_SESSION['usrid']."' $where ORDER BY $orderby";
+	if(!$page_title) $page_title = "My Vocab";
+	$sql = "SELECT * FROM vocab WHERE user_id='".$current_user->getId()."' $where ORDER BY $orderby";
+	$statement = $pdo->query($sql);
 }
-$res   = mysqli_query($db['link'], $query);
-$num   = 0;
-$rows  = array();
-while($row = mysqli_fetch_assoc($res)) {
-	/*if($row['zid']) {
-		//get the data from zhongwen and merge it into $row
-		$q = "SELECT * FROM zhongwen WHERE zid='".$row['zid']."' LIMIT 1";
-		$zw = mysqli_fetch_assoc(mysqli_query($db['link'], $q));
-		$row = array_merge($row, $zw);
-	}*/
-	
-	if($slist == "singlechars") {
+while ($row = $statement->fetch()) {
+	if ($slist == "singlechars") {
 		//filter out non-single chars
-		if(strlen($row['hanzi_jt']) == 3) {
+		if (strlen($row['hanzi_jt']) == 3) {
 			if($num++ < 50) $rows[] = $row;
 		}
 	} else {
@@ -497,11 +495,11 @@ while($row = mysqli_fetch_assoc($res)) {
 
 $rownum = count($rows);
 
-if($tag) $page->title.= ' / '.$pgtitle;
-$page->header();
+if($tag) $page_title.= ' / '.$page_title; //???????
+include __DIR__."/../templates/page_header.php";
 
 ?>
-<h2 style="margin-bottom:0;"><?=$pgtitle?></h2>
+<h2 style="margin-bottom:0;"><?=$page_title?></h2>
 
 <div id="vocablistsel" style="margin-bottom:20px;">
 	<table border="0" cellpadding="10" cellspacing="0" width="100%" style="background-color:white; border-width:0 1px 1px; border-style:solid; border-color:#DDD;">
@@ -524,19 +522,6 @@ $page->header();
 				<?
 			}
 			
-			/*?>
-			<td valign="top" style="border-right:1px solid #DDD;">
-				<select onchange="document.location='/vocab.php?tag='+this.options[this.selectedIndex].value;">
-					<option value="">My lists...</option>
-					<?
-					$query2 = "SELECT tag, COUNT(tag) AS num FROM tags WHERE usrid='".$_SESSION['usrid']."' GROUP BY tag ORDER BY tag";
-					$res2   = mysqli_query($db['link'], $query2);
-					while($row = mysqli_fetch_assoc($res2)) {
-						echo '<option value="'.$row['tag'].'" class="hz">'.$row['tag'].' ('.$row['num'].')</option>';
-					}
-					?>
-				</select>
-			</td><? */
 			?><td valign="top" width="100%">
 				<select onchange="document.location='/vocab.php?tag='+this.options[this.selectedIndex].value;">
 					<option value="">Special lists...</option>
@@ -616,7 +601,7 @@ if($num) {
 							</dd>
 						</dl>
 						<?
-						foreach($rows as $row) outputVocab($row);
+						foreach($rows as $row) Vocab::output($row);
 						?>
 					</div>
 				</div>
@@ -625,7 +610,7 @@ if($num) {
 		} else {
 			//list
 			foreach($rows as $row) {
-				outputVocab($row);
+				Vocab::output($row);
 			}
 			if($rownum < $num) echo '<div style="padding:3px 10px; font-size:18px; border:1px solid #DDD; background-color:#EEE;">Showing 50 of '.$num.' vocab entries. <b><a href="#loadvocab">Load all vocab</a></b></div>';
 		}
@@ -634,4 +619,4 @@ if($num) {
 	<?
 }
 
-include __DIR__."/../templates/page_header.php";
+include __DIR__."/../templates/page_footer.php";

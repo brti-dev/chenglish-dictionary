@@ -1,7 +1,8 @@
 <?php
 
-$options = [
+$db_options = [
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 ];
 $db_config_file = __DIR__.'/../config_db.ini';
 
@@ -15,7 +16,7 @@ try {
         $db_config['port']
     );
 
-    $pdo = new PDO($dsn, $db_config['username'], $db_config['password'], $options);
+    $pdo = new PDO($dsn, $db_config['username'], $db_config['password'], $db_options);
 } catch (PDOException $e) {
     // Database connection failed
     echo "Database connection failed";

@@ -571,32 +571,32 @@ kbd {
 
 
 
-BODY, HTML {
+body, html {
 	min-width: 500px;
 	margin: 0;
 	padding: 0;
 }
-BODY {
+body {
 	background-color: white;
 	background-repeat: no-repeat;
 	background-position: left top;
 }
 
-BODY, TH, TD {
+body, th, td {
 	font-size: 17px;
 	text-align: left;
 }
 
-A {
+a {
 	color: #03C;
 }
-A:HOVER {
+a:hover {
 	color: #359AFF;
 }
-A:ACTIVE {
+a:active {
 	color: red;
 }
-A:VISITED {
+a:visited {
 	color: purple;
 }
 
@@ -608,11 +608,11 @@ A:VISITED {
 
 #header { position:relative; }
 
-H1 {
+h1 {
 	margin: 0 0 30px;
 	padding: 0;
 }
-H1 A {
+h1 a {
 	display: block;
 	height: 80px;
 	width: 80px;
@@ -620,34 +620,35 @@ H1 A {
 	font-size: 8px;
 	background: url(/assets/img/heading.png) no-repeat 0 0;
 }
-H1 A SPAN {
+h1 a span {
 	visibility: hidden;
 }
 
 #search {
 	float: left;
-}
+  position: relative; }
+  #search-info {
+    display: none; 
+    position: absolute; 
+    z-index: 98;
+    width: max-content;
+    padding: 3px 5px; 
+    border: 1px solid #444; 
+    background-color: white; }
+  #search-info samp {
+    font-family: monospace; }
 
 #vocablist { margin:0 0 0 235px; }
-#vocablist SELECT { margin:2px 0 0; }
+#vocablist select { margin:2px 0 0; }
 
 #login {
 	position: absolute;
 	top: 0;
 	left: 235px;
-	border: 1px solid #DDD;
-}
-#login .container {
-	padding: 1px 5px 5px;
-	background: url(/assets/img/white_bg_80.png) repeat 0 0;
-}
-#login TH, #login TD {
-	font-size: 14px;
-	font-family: Arial;
-}
-#login TH {
-	font-weight: bold;
-}
+	border: 1px solid #DDD; }
+  #login .container {
+  	padding: 1px 5px 5px;
+  	background: url(/assets/img/white_bg_80.png) repeat 0 0; }
 
 #footer {
 	margin: 30px 0;
@@ -657,43 +658,41 @@ H1 A SPAN {
 
 /* form styles */
 
-FORM {
+form {
 	margin: 0; }
-FIELDSET {
+fieldset {
 	margin-left:0; margin-right:0;
 	padding:10px;
 	font-family:Arial;
 	border: 1px solid #CCC;
 }
-LEGEND {
+legend {
 	font-size: 14px;
 	color: #666;
 }
-INPUT[type=text], INPUT[type=password], TEXTAREA, SELECT {
+input[type=text], input[type=password], input[type=email], textarea, select {
 	padding: 3px 1px 3px 3px;
 	border-width: 1px;
 	border-style: solid;
 	border-color: #777 #CCC #CCC #777;
 }
-INPUT[type=text].focused, INPUT[type=password].focused, TEXTAREA.focused, SELECT.focused {
-	border-color: #444;
-}
-INPUT[type=text], INPUT[type=password] {
+input:focus {
+	border-color: #444; }
+input[type=text], input[type=password], input[type=email] {
 	font-size: 13px;
-	font-family: Arial;
-}
+	font-family: Arial; }
 .inpfw {
 	margin-right: 6px;
 }
-.inpfw INPUT[type=text], .inpfw INPUT[type=password], .inpfw TEXTAREA, .inpfw SELECT {
+.inpfw input[type=text], .inpfw input[type=password], .inpfw textarea, .inpfw select {
 	width: 100%;
 }
-SELECT {
+select {
 	padding: 2px;
 	font-family: Arial;
 	font-size: 13px;
 }
-OPTGROUP {
+optgroup {
 	padding-top: 2px;
 	font-weight: normal;
 	font-style: italic;
@@ -701,15 +700,15 @@ OPTGROUP {
 	color: #777;
 	background-color: #EEE;
 }
-OPTGROUP > OPTION {
+optgroup > option {
 	padding-left: 20px;
 	background-color: #FFF;
 	color: black;
 }
-OPTGROUP > OPTION:first-child {
+optgroup > option:first-child {
 	margin-top: 2px;
 }
-INPUT[type=button], BUTTON, INPUT[type=submit], INPUT[type=reset] {
+input[type=button], button, input[type=submit], input[type=reset] {
 	padding-top: 2px;
 	padding-bottom: 2px;
 	font-size: 13px;
@@ -719,13 +718,13 @@ INPUT[type=button], BUTTON, INPUT[type=submit], INPUT[type=reset] {
 	border-style: solid;
 	border-color: #BBB #AAA #AAA #BBB;
 	cursor: pointer; }
-INPUT[type=button].over, INPUT[type=submit].over, INPUT[type=reset].over {
+input[type=button].over, input[type=submit].over, input[type=reset].over {
 	border-color: #777;
 }
-.redborder INPUT[type=button].over, .redborder INPUT[type=submit].over, .redborder INPUT[type=reset].over {
+.redborder input[type=button].over, .redborder input[type=submit].over, .redborder input[type=reset].over {
 	border-color: #DB0F0F;
 }
-INPUT[type=button].down, INPUT[type=submit].down, INPUT[type=reset].down {
+input[type=button].down, input[type=submit].down, input[type=reset].down {
 	border-color: #222 #999 #999 #222;
 }
 
@@ -738,7 +737,7 @@ INPUT[type=button].down, INPUT[type=submit].down, INPUT[type=reset].down {
 	border: 1px solid #333;
 	background: #f7f5d1;
 	font-size: 12px;
-	font-family: Arial,STXihei,STHeiti,SimSun,PMingLiU,SimHei;
+	font-family: Arial,STXihei,Stheiti,SimSun,PMingLiU,SimHei;
 	color: #333;
 	display: none;
 }
@@ -753,19 +752,14 @@ INPUT[type=button].down, INPUT[type=submit].down, INPUT[type=reset].down {
 
 /* general styles */
 
-H2 {
+h2 {
 	background-color:white;
 	border:1px solid #DDDDDD;
-	font-family: Georgia,Helvetica,Arial,STXihei,STHeiti,SimSun,PMingLiU,SimHei,"Arial Unicode MS","TITUS Cyberbit Basic","Bitstream Cyberbit","Lucida Sans Unicode",Sans-Serif;
+	font-family: Georgia,Helvetica,Arial,STXihei,Stheiti,SimSun,PMingLiU,SimHei,"Arial Unicode MS","TITUS Cyberbit Basic","Bitstream Cyberbit","Lucida Sans Unicode",Sans-Serif;
 	font-size:31px;
 	font-weight:normal;
 	margin:20px 0;
 	padding:2px 8px;
-}
-
-.resetonfocus {
-	font-style: italic;
-	color: #AAA;
 }
 
 TABLE.results {
@@ -773,17 +767,17 @@ TABLE.results {
 	border-style: solid;
 	border-color: #CCC;
 }
-TABLE.results TR.over TD {
+TABLE.results TR.over td {
 	background-color: #FFFFB7;
 }
-TABLE.results TH, TABLE.results TD {
+TABLE.results th, TABLE.results td {
 	padding: 6px 8px;
 	border-width: 1px 1px 0 0;
 	border-style: solid;
 	border-color: #CCC;
 	background-color: white;
 }
-TABLE.results TH {
+TABLE.results th {
 	font-weight: normal;
 	color: #666;
 	text-align: left;
@@ -791,7 +785,7 @@ TABLE.results TH {
 	background-color: #EEE;
 }
 .hz {
-	font-family:標楷體,Helvetica,Arial,STXihei,STHeiti,SimSun,PMingLiU,SimHei,"Arial Unicode MS","TITUS Cyberbit Basic","Bitstream Cyberbit","Lucida Sans Unicode",Sans-Serif;
+	font-family:標楷體,Helvetica,Arial,STXihei,Stheiti,SimSun,PMingLiU,SimHei,"Arial Unicode MS","TITUS Cyberbit Basic","Bitstream Cyberbit","Lucida Sans Unicode",Sans-Serif;
 }
 BIG.hz {
 	font-size: 200%;
@@ -799,7 +793,7 @@ BIG.hz {
 .hz A {
 	text-decoration: none;
 }
-.results TD .hz { display:block; width:159px; }
+.results td .hz { display:block; width:159px; }
 
 .fjsw {
 	padding: 0 2px;
@@ -830,7 +824,7 @@ BIG.hz {
 .vocablist DL DD.pinyin {
 	margin-left: 0;
 }
-.vocablist DL DD.pinyin TD {
+.vocablist DL DD.pinyin td {
 	width: 55px;
 	white-space: nowrap;
 	text-align: center;
@@ -839,7 +833,7 @@ BIG.hz {
 .vocablist DL DD.definitions, .vocablist DL DD.compounds {
 	padding: 0 0 0 23px;
 	background: url(/assets/img/arrow-small-gray-right.png) no-repeat 10px 8px;
-	font-family:Helvetica,Arial,STXihei,STHeiti,SimSun,PMingLiU,SimHei;
+	font-family:Helvetica,Arial,STXihei,Stheiti,SimSun,PMingLiU,SimHei;
 }
 
 .vocablist .extras {}
@@ -854,12 +848,12 @@ BIG.hz {
 	font-size:13px; font-family:Arial; color: #03C;
 	border:1px solid #CCC; border-radius:2px; -moz-border-radius:2px; -webkit-border-radius:2px;
 }
-.vocablist .extras UL LI A:HOVER { background-color:#CCC; }
+.vocablist .extras UL LI A:hover { background-color:#CCC; }
 
 .vocablist .fcards LI.mark { position:absolute; top:8px; right:0; }
 .vocablist .fcards LI.known { right:40px; }
 .vocablist .extras LI.mark A { background:url(/assets/img/gradient_green_sm.png) repeat-x 0 0; }
-.vocablist .extras LI.mark A:HOVER { background-position:0 -38px; }
+.vocablist .extras LI.mark A:hover { background-position:0 -38px; }
 .vocablist .extras LI.unknown A { background-image:url(/assets/img/gradient_red_sm.png); }
 .vocablist .extras LI.marked A { background-image:none !important; background-color:#CCC; }
 
@@ -918,7 +912,7 @@ BIG.hz {
 	color: #777;
 }
 .vocablist .fcards BIG.hz {
-	font-family: Helvetica,Arial,"標楷體",STXihei,STHeiti,SimSun,PMingLiU,SimHei,"Arial Unicode MS","TITUS Cyberbit Basic","Bitstream Cyberbit","Lucida Sans Unicode",Sans-Serif;
+	font-family: Helvetica,Arial,"標楷體",STXihei,Stheiti,SimSun,PMingLiU,SimHei,"Arial Unicode MS","TITUS Cyberbit Basic","Bitstream Cyberbit","Lucida Sans Unicode",Sans-Serif;
 	font-size: 115px;
 }
 .vocablist .fcards .ftz {
@@ -931,7 +925,7 @@ BIG.hz {
 .vocablist .fcards .pinyin TABLE {
 	margin: 0 auto;
 }
-.vocablist .fcards .pinyin TD {
+.vocablist .fcards .pinyin td {
 	width: 116px;
 	font-size: 15px;
 }
@@ -956,15 +950,15 @@ BIG.hz {
 .vocablist .fcards .extras UL LI A {}
 
 TABLE.vocab-aded {}
-TABLE.vocab-aded TH {
+TABLE.vocab-aded th {
 	padding: 30px 20px 0 0;
 	text-align: right;
 	vertical-align: top;
 }
-TABLE.vocab-aded TD {
+TABLE.vocab-aded td {
 	padding:30px 0 0;
 }
-TABLE.vocab-aded TBODY TR:first-child TD, TABLE.vocab-aded TBODY TR:first-child TH { padding-top:0 !important; }
+TABLE.vocab-aded TBODY TR:first-child td, TABLE.vocab-aded TBODY TR:first-child th { padding-top:0 !important; }
 
 #box {
 	display:none;
@@ -978,8 +972,8 @@ TABLE.vocab-aded TBODY TR:first-child TD, TABLE.vocab-aded TBODY TR:first-child 
 	background-color:white;
 	opacity:.92;
 }
-#box, #box TD, #box TH { font-size:13px; font-family:Arial; }
+#box, #box td, #box th { font-size:13px; font-family:Arial; }
 #box > A { float:right; color:#E32828; }
-#box H2 { margin:0 0 10px; padding:0 0 10px; border-width:0 0 1px; }
+#box h2 { margin:0 0 10px; padding:0 0 10px; border-width:0 0 1px; }
 
-#listcontrols A:HOVER IMG { opacity:.7 !important; }
+#listcontrols A:hover IMG { opacity:.7 !important; }

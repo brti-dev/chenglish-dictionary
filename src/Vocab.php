@@ -1,39 +1,11 @@
 <?php
 
-ini_set("error_reporting", 6135);
-ini_set('session.save_path', __DIR__.'/../var/sessions');
+namespace Pced;
 
-use Pced\DB;
-use Pced\Session;
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
+class Vocab {
 
-define("TEMPLATE_PATH", "templates");
-define("APP_NAME", "PCE Dictionary");
-
-date_default_timezone_set('America/New_York');
-
-$default_email = "mat.berti@gmail.com";
-
-require __DIR__."/../config/config_db.php";
-
-session_start();
-
-//login from cookies
-if(isset($_SESSION['session_id'])) {
-    $q = "SELECT * FROM users WHERE usrid='".mysqli_real_escape_string($db['link'], $_COOKIE['remember_usrid'])."' AND password='".mysqli_real_escape_string($db['link'], $pass)."' LIMIT 1";
-    $res = mysqli_query($db['link'], $q);
-    if($userdat = mysqli_fetch_object($res)) {
-        if(!$_SESSION['usrid'] = $userdat->usrid) $errors[] = "Couldn't set session variable 'usrid'.";
-        if(!$errors) {
-            //update activity
-            $q2 = "UPDATE users SET last_login='".date("Y-m-d H:i:s")."', last_login_2='".$userdat->last_login."' WHERE usrid='".$_SESSION['usrid']."' LIMIT 1";
-            mysqli_query($db['link'], $q2);
-        }
-    }
-}
-
-function outputVocab($row) {
+    public static function output($row)
+    {
     
     global $vcount, $rownum, $ver, $db;
     $vcount++;
@@ -106,48 +78,6 @@ function outputVocab($row) {
         </dd>
     </dl>
     <?
-}
-
-function htmlSC($x) {
-    $x = str_replace('"', '&quot;', $x);
-    $x = str_replace("'", "&#039;", $x);
-    $x = str_replace("<", "&lt;", $x);
-    $x = str_replace(">", "&gt;", $x);
-    return $x;
-}
-
-function mysqlNextAutoIncrement($table, $dontdie='') {
-    $q = "SHOW TABLE STATUS LIKE '$table'";
-    $r  = mysqli_query($db['link'], $q) or die ( "Query failed: " . mysqli_error() );
-    $row = mysqli_fetch_assoc($r);
-    if($row['Auto_increment']) return $row['Auto_increment'];
-    elseif(!$dontdie) die("Couldn't get incremental ID for `$table`");
-}
-
-function str_split_utf8($str) {
-    // php4 ?
-    // place each character of the string into and array
-    $split=1;
-    $array = array();
-    for ( $i=0; $i < strlen( $str ); ){
-        $value = ord($str[$i]);
-        if($value > 127){
-            if($value >= 192 && $value <= 223)
-                $split=2;
-            elseif($value >= 224 && $value <= 239)
-                $split=3;
-            elseif($value >= 240 && $value <= 247)
-                $split=4;
-        }else{
-            $split=1;
-        }
-            $key = NULL;
-        for ( $j = 0; $j < $split; $j++, $i++ ) {
-            $key .= $str[$i];
-        }
-        array_push( $array, $key );
     }
-    return $array;
+    
 }
-
-?>

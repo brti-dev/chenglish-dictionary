@@ -26,8 +26,9 @@ Although there are <a href="http://mdbg.net/chindict/chindict.php" title="MDBG C
 <h3 style="margin:20px 0 5px; padding: 20px 0 0; border-top:1px solid #CCC;">Random Dictionary Entry</h3>
 <dl>
 	<?php
-	$q = "SELECT * FROM zhongwen LIMIT ".rand(0, 91678).", 1";
-	$row = mysqli_fetch_assoc(mysqli_query($db['link'], $q));
+	$sql = "SELECT * FROM zhongwen LIMIT ".rand(0, 91678).", 1";
+	$statement = $pdo->query($sql);
+	$row = $statement->fetch();
 	$row['definitions'] = preg_replace("@^/|/$@", "", $row['definitions']);
 	$row['definitions'] = str_replace("/", '&nbsp;&nbsp;<span style="color:#AAA;">/</span>&nbsp;&nbsp;', $row['definitions']);
 	?>
