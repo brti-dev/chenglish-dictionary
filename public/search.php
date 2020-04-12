@@ -3,11 +3,10 @@
 require '../vendor/autoload.php';
 
 use Pced\PrimezeroTools;
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
+use Pced\Vocab;
 
 require_once (__DIR__."/../config/config_app.php");
-require_once (__DIR__."/../src/PrimezeroTools.php");
+
 $pz = new PrimezeroTools();
 
 // Filter input
@@ -56,26 +55,38 @@ if (!$query) {
 
 	if ($_SESSION['logged_in']) {
 		
-		// search vocab list
+		// Search user's vocab list
 		
-		$sql = "";
+		// Build SQL query
+		$like = "";
+		$execute = ["user_id" => $current_user->getId()];
+		if ($in_defs) {
+			$like.= "definitions LIKE CONCAT('%', :query_definition, '%') OR ";
+			$execute['query_definition'] = $query_definition;
+		}
+		if ($hanzi) {
+			$like.= "(hanzi_jt LIKE :query OR hanzi_ft LIKE :query) ";
+			$execute['query'] = $query;
+		}
+		elseif ($pinyin) {
+			$like.= "pinyin LIKE CONCAT('%', :pinyin, '%') ";
+			$execute['pinyin'] = $pinyin;
+		}
+		$sql = "SELECT * FROM vocab INNER JOIN zhongwen USING (zid) WHERE user_id=:user_id AND $like LIMIT 0, 100;";
 		$statement = $pdo->prepare($sql);
-		$statement->execute();
-
+		$statement->execute($execute);
+		
 		// Iterate over search results
 		$rows = [];
 		$num_rows = 0;
 		while (($row = $statement->fetch(PDO::FETCH_ASSOC)) !== false) {
-			$rows[] = $row;
-			$num_rows++;
+			$rows[] = new Vocab($row, $pdo, $logger);
+			$num_rows += 1;
 		}
 		
 		if($num_rows == 0) {
-
 			echo '<h3>No results from your vocab lists</h3>';
-
 		} else {
-			
 			?>
 			<h3 style="margin-bottom:0;">
 				<?=($num_rows >= 100 ? "More than 100" : $num_rows)?> result<?=($num_rows != 1 ? 's' : '')?> in your vocab for '<span class="hz"><?=htmlspecialchars($query)?></span>'
@@ -83,11 +94,12 @@ if (!$query) {
 			<a href="#dicres">Skip to Dictionary Results &gt;</a>
 			<div class="vocablist">
 				<?
-				foreach($rows as $row) outputVocab($row);
+				foreach($rows as $vocab) {
+					$vocab->renderHTML();
+				}
 				?>
 			</div>
 			<?
-			
 		}
 	}
 

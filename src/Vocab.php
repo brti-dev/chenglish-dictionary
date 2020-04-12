@@ -30,7 +30,7 @@ class Vocab {
         }
     }
 
-    public function output()
+    public function renderHTML()
     {        
         $this->definitions = preg_replace("@^/|/$@", "", $this->definitions);
         $this->definitions = str_replace("/", ' &nbsp;<span style="color:#AAA;">/</span>&nbsp; ', $this->definitions);
