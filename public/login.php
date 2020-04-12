@@ -3,8 +3,7 @@
 require '../vendor/autoload.php';
 
 use Pced\User;
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
+use Pced\Vocab;
 
 require_once (__DIR__."/../config/config_app.php");
 
@@ -36,6 +35,8 @@ if (isset($_POST['submit_login'])) {
 	try {
 		[$email, $password, $password_hash] = validateUserInput();
 
+		$logger->info("User log in via email `$email`");
+
 		$user = User::getByEmail($email, $GLOBALS['pdo'], $logger);
 
 		if (password_verify($password, $user->data['password']) === false) {
@@ -58,9 +59,9 @@ if (isset($_POST['submit_login'])) {
 		}
 
 		$_SESSION['logged_in'] = 'true';
-		$_SESSION['user_id'] = $user->user_id;
+		$_SESSION['user_id'] = $user->getId();
 
-		if($_POST['remember']) {}
+		$logger->debug("Session vars set via login", $_SESSION);
 
 		//update activity
 		$user->data['last_login_2'] = $user->data['last_login'];
@@ -68,11 +69,10 @@ if (isset($_POST['submit_login'])) {
 		$user->save();
 		
 		$ref = $_SERVER['HTTP_REFERER'];
-		if(strstr($ref, "login.php")) $ref = "/";
+		if (strstr($ref, "login.php")) $ref = "/";
 
 		header("HTTP/1.1 302 Redirect");
 		header("Location: ".$ref);
-
 	} catch (Exception $e) {
 		$page_title = APP_NAME .  " / Login";
 		include __DIR__."/../templates/page_header.php";
@@ -133,6 +133,25 @@ if(isset($_POST['submit_registration'])) {
 		include __DIR__."/../templates/page_footer.php";
 		exit;
 	}
+
+	/*
+    Create first vocab & list tags
+    $insert_zids  Which characters to insert into the new user's vocab
+    5401=你好
+    6246=个
+     */
+    $insert_zids = [
+        5401 => "General Vocab", 
+        6246 => "Measure Words",
+    ];
+    foreach ($insert_zids as $zid => $tag) {
+        $insert_params = [
+            "zid" => $zid, 
+            "tags" => [$tag], 
+            "user_id" => $user->getId(),
+        ];
+        Vocab::insert($insert_params, $pdo, $logger);
+    }
 	
 	$page_title = APP_NAME .  " / Register";
 	include __DIR__."/../templates/page_header.php";
@@ -146,13 +165,11 @@ if(isset($_POST['submit_registration'])) {
 
 //logout
 if(isset($_GET['do']) && $_GET['do'] == "logout") {
-	setcookie(session_name(), '', time()-42000, '/');
-	setcookie("remember_usrid", "", time()-60*60*24*100, "/");
-	setcookie("remember_usrpass", "", time()-60*60*24*100, "/");
-	unset($_SESSION['usrid']);
-	session_destroy();
+	unset($_SESSION['user_id']);
+	unset($_SESSION['logged_in']);
+
 	$ref = $_SERVER['HTTP_REFERER'];
-	if(strstr($ref, "login.php")) $ref = "/";
+	if (strstr($ref, "login.php")) $ref = "/";
 	header("Status: 303");
 	header("Location: ".$ref);
 	exit();
