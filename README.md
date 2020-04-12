@@ -24,3 +24,13 @@ Contributions welcome!
 
 * Dictionary data provided by [CC-CEDICT](http://cc-cedict.org/)
 * [eric okorie's PrimezeroTools](http://code.google.com/p/pzphp/wiki/PrimezeroTools) for pinyin and romanization 
+
+## Todo
+
+* ~Convert mysql to pdo~
+* Classes to manage db tables and app functions
+    * ~User class~
+    * Vocab class
+    * ~Zhongwen class~
+* Responsive CSS
+* Flashcads swipe for mobile
