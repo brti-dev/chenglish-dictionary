@@ -7,6 +7,19 @@ require __DIR__."/../config/config_db.php";
 
 class UserTest extends TestCase
 {
+    public function testRanks()
+    {
+        $this->assertEquals(User::GUEST, 0);
+        $this->assertEquals(User::getRanks()['RESTRICTED'], 1);
+        $this->assertEquals(User::getRankName(2), "MEMBER");
+    }
+
+    public function testRanksException()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        User::getRankName(99);
+    }
+
     public function testInvalidUser()
     {
         $this->expectException(Exception::class);
@@ -20,13 +33,16 @@ class UserTest extends TestCase
         $this->assertEquals($user->data['email'], 'test@test.com');
         $this->assertEquals($user->data['user_id'], 1);
 
+        $user_by_id = User::getById(1, $GLOBALS['pdo']);
+        $this->assertEquals($user, $user_by_id);
+
         return $user;
     }
 
     /**
     @depends testGetUser
      */
-    public function testSaveUser($user)
+    public function testSaveUser(User $user)
     {
         $this->assertEquals($user->data['email'], 'test@test.com');
         $user->data['email'] = 'foo@bar.com';
@@ -62,11 +78,11 @@ class UserTest extends TestCase
         return $user;
     }
 
-    function testInsertUserDelete()
+    /**
+    @depends testInsertUser
+     */
+    function testInsertUserDelete(User $user)
     {
-        $sql = "DELETE FROM users WHERE email=:email";
-        $statement = $GLOBALS['pdo']->prepare($sql);
-        $statement->bindValue(':email', 'foo@bar.com');
-        $this->assertTrue($statement->execute());
+        $this->assertTrue($user->delete());
     }
 }
