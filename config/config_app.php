@@ -5,8 +5,8 @@ ini_set("session.save_path", __DIR__."/../var/sessions");
 
 use Pced\DB;
 use Pced\User;
+// use Pced\Exception;
 use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
 
 define("TEMPLATE_PATH", "templates");
 define("APP_NAME", "PCE Dictionary");
@@ -21,10 +21,23 @@ session_start();
 
 $logger = new Logger('app');
 // Register a handler -- file loc and minimum error level to record
-$logger->pushHandler(new StreamHandler(__DIR__."/../var/logs/app.log", (ENVIRONMENT == "development" ? Logger::DEBUG : Logger::INFO)));
+$logger->pushHandler(new Monolog\Handler\StreamHandler(__DIR__."/../var/logs/app.log", (ENVIRONMENT == "development" ? Logger::DEBUG : Logger::INFO)));
+
+// Catch uncaught exceptions
+set_exception_handler(function (\Throwable $e) {
+    $GLOBALS['logger']->warning($e);
+    if (ENVIRONMENT == "development") echo $e;
+    else echo $e->getMessage();
+});
 
 //login from cookies
 if (isset($_SESSION['logged_in'])) {
+    if (isset($_SESSION['user_id']) === false) {
+        unset($_SESSION['user_id']);
+        unset($_SESSION['logged_in']);
+        throw new Exception("A session was found, but user_id not set. Please refresh your browser and try logging in again.");
+    }
+
     $logger->pushProcessor(function ($record) {
         $record['extra']['session user_id'] = $_SESSION['user_id'];
         $record['extra']['IP'] = $_SERVER['REMOTE_ADDR'];
