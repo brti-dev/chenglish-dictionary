@@ -3,6 +3,7 @@
 namespace Pced;
 
 use Pced\Exception;
+use Pced\Vocab;
 
 class User {
 
@@ -19,6 +20,7 @@ class User {
     private $pdo;
     private $logger;
     private $user_id;
+    private $rank = 0;
 
     /**
      * Data that corresponds to the Database columns
@@ -36,12 +38,13 @@ class User {
     public function __construct(array $params, $pdo, $logger=[])
     {
         $this->pdo = $pdo;
-        if ($logger) {
+        if (!empty($logger)) {
             $this->logger = $logger;
             $this->logger->debug("User object construction", $params);
         }
 
         if (isset($params['user_id'])) $this->user_id = $params['user_id'];
+        if (isset($params['rank'])) $this->rank = $params['rank'];
 
         foreach ($params as $key => $val) {
             $this->data[$key] = $val;
@@ -103,7 +106,7 @@ class User {
     public static function getRankName(int $rank): string
     {
         if (!isset(static::$ranks[$rank]))
-            throw new InvalidArgumentException('Rank "'.$rank.'" is not defined, use one of: '.implode(', ', array_keys(static::$ranks)));
+            throw new \InvalidArgumentException('Rank "'.$rank.'" is not defined, use one of: '.implode(', ', array_keys(static::$ranks)));
 
         return static::$ranks[$rank];
     }
@@ -129,18 +132,18 @@ class User {
         $statement->bindValue(':last_login', $this->data['last_login']);
         $statement->bindValue(':last_login_2', $this->data['last_login_2']);
         $statement->bindValue(':user_id', $this->user_id);
-        $statement->execute();
+        if (!$statement->execute()) {
+            throw new Exception("Error saving User data");
+            if ($this->logger) $this->logger->error("Error saving User data at User::save()", $this->data);
+        }
 
-        if($this->logger) $this->logger->info("Save User data {username}", $this->data);
+        if ($this->logger) $this->logger->info("Save User data ", $this->data);
 
         return true;
     }
 
     public function insert(): bool
     {
-        if (!$this->data['email'])
-            throw new Exception("Couldn't save User: The email address hasn't been set.");
-
         $datetime = date("Y-m-d H:i:s");
         $sql = "INSERT INTO users (email, password, registered, last_login, last_login_2) VALUES (:email, :password, '$datetime', '$datetime', '$datetime');";
         $statement = $this->pdo->prepare($sql);
@@ -152,34 +155,23 @@ class User {
 
         $_SESSION['logged_in'] = 'true';
         $_SESSION['user_id'] = $this->user_id;
-         
-        /*
-        Create first vocab & list tags
-        $insert_ids  Which characters to insert into the new user's vocab
-        5401=你好
-        6246=个
-         */
-        $insert_zids = array(
-            5401 => "General Vocab", 
-            6246 => "Measure Words",
-        );
-        try {
-            $this->pdo->beginTransaction();
-            $sql = "INSERT INTO vocab (user_id, zid) VALUES ('%d', '%d');";
-            foreach ($insert_zids as $zid => $tag) {
-                $statement = $this->pdo->query(sprintf($sql, $this->user_id, $zid));
-                $statement->execute();
 
-                $vocab_id = $this->pdo->lastInsertId();
-                $statement = $this->pdo->prepare("INSERT INTO tags (user_id, tag, vocab_id) VALUES (?, ?, ?);");
-                $statement->execute([$this->user_id, $tag, $vocab_id]);
-            }
-            $this->pdo->commit();
-        } catch(Exceptions $e) {
-            $this->pdo->rollback();
-            throw $e;
-        }
-        
+        if ($this->logger) $this->logger->info("Insert into Users user_id:".$this->user_id, $this->data);
+         
+        return true;
+    }
+
+    public function delete(): bool
+    {
+        if (!$this->user_id)
+            throw new Exception("Couldn't delete User: user_id hasn't been set.");
+
+        $sql = sprintf("DELETE FROM users WHERE user_id = %d LIMIT 1", (int) $this->user_id);
+        $statement = $this->pdo->query($sql);
+        $statement->execute();
+
+        if ($this->logger) $this->logger->info("DELETE user user_id:".$this->user_id, $this->data);
+
         return true;
     }
 }

@@ -3,6 +3,7 @@
 $db_options = [
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_STRINGIFY_FETCHES => false,
 ];
 $db_config_file = __DIR__.'/../config_db.ini';
 
