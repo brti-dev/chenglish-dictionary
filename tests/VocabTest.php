@@ -10,6 +10,19 @@ define("TEST_USER_ID", 1);
 
 class VocabTest extends TestCase
 {
+    public function testClearPreviousTestVocab()
+    {
+        $get_params = [
+            "zid" => 3, // Obscure character
+            "user_id" => TEST_USER_ID,
+        ];
+        if ($vocab = Vocab::get($get_params, $GLOBALS['pdo'], $GLOBALS['logger_tests'])[0]) {
+            $this->assertTrue($vocab->delete());
+        } else {
+            $this->assertTrue(true);
+        }
+    }
+
     public function testInsertVocabEmptyException()
     {
         $this->expectException(Exception::class);
@@ -47,11 +60,11 @@ class VocabTest extends TestCase
      */
     public function testSaveVocab(Vocab $vocab)
     {
-        $vocab->frequency = 99;
-        $vocab->memorized = 1;
+        $vocab->frequency += 1;
+        $vocab->memorized += 1;
         $this->assertTrue($vocab->save());
 
-        $vocab_check = Vocab::get(["vocab_id"=>$vocab->vocab_id], $GLOBALS['pdo'], $GLOBALS['logger_tests'])[0];
+        $vocab_check = Vocab::get(["vocab_id"=>$vocab->getId()], $GLOBALS['pdo'], $GLOBALS['logger_tests'])[0];
         $this->assertEquals($vocab->frequency, $vocab_check->frequency);
         $this->assertEquals($vocab->memorized, $vocab_check->memorized);
     }
@@ -62,10 +75,10 @@ class VocabTest extends TestCase
             "zid" => 3, // Obscure character
             "user_id" => TEST_USER_ID,
         ];
-        $vocab_item = Vocab::get($get_params, $GLOBALS['pdo'], $GLOBALS['logger_tests'])[0];
-        $this->assertEquals((int) $vocab_item->zid, 3);
+        $vocab = Vocab::get($get_params, $GLOBALS['pdo'], $GLOBALS['logger_tests'])[0];
+        $this->assertEquals((int) $vocab->getZid(), 3);
 
-        return $vocab_item;
+        return $vocab;
     }
 
     /**

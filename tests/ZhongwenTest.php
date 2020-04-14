@@ -13,10 +13,16 @@ class ZhongwenTest extends TestCase
         $zw = Zhongwen::getByZid(99999, $GLOBALS['pdo']);
     }
 
-    public function testGetZhongwen()
+    public function testGetZhongwenByZid()
     {
         $zw = Zhongwen::getByZid(5401, $GLOBALS['pdo'])[0];
         $this->assertEquals($zw->pinyin, "ni3 hao3");
         $this->assertEquals($zw, Zhongwen::getByHanzi("你好", $GLOBALS['pdo'])[0]);
+    }
+
+    public function testGetZhongwenByHanzi()
+    {
+        $zw = Zhongwen::getByHanzi("你好", $GLOBALS['pdo'])[0];
+        $this->assertEquals($zw->pinyin, "ni3 hao3");
     }
 }

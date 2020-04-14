@@ -1,8 +1,9 @@
 <?php declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
+use Pced\Exception;
 
-class BasicTest extends TestCase
+class PHPTest extends TestCase
 {
     public function testReferences(): void
     {
@@ -65,5 +66,18 @@ class BasicTest extends TestCase
         }
         usort($games, getSortFunction("title"));
         $this->assertSame($games[0]['title'], "Chrono Trigger");
+    }
+
+    public function testException()
+    {
+        $this->expectException(Exception::class);
+        throw new Exception ("I am an exception", 112);
+    }
+
+    public function testObjects()
+    {
+        $obj_a = new stdClass;
+        $obj_b = new stdClass;
+        $this->assertEquals($obj_a, $obj_b);
     }
 }
