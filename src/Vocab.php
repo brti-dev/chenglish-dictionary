@@ -6,6 +6,7 @@ require_once __DIR__."/../config/config_db.php";
 
 class Vocab {
 
+    private $initialized = false;
     private $pdo;
     private $logger;
 
@@ -22,24 +23,28 @@ class Vocab {
             $this->{$key} = $value;
         }
 
+        $this->initialized = true;
         $this->pdo = $pdo;
 
         if (!empty($logger)) {
             $this->logger = $logger;
             $this->logger->debug("Vocab object construction", $row);
         }
+
+        return $this;
     }
 
     public function renderHTML()
     {        
+        if (!$this->initialized) {}
+
         $this->definitions = preg_replace("@^/|/$@", "", $this->definitions);
         $this->definitions = str_replace("/", ' &nbsp;<span style="color:#AAA;">/</span>&nbsp; ', $this->definitions);
         
-        $tags = array();
-        $sql = sprintf("SELECT tag FROM tags WHERE vocab_id=%d", (int) $this->vocab_id);
-        $statement = $GLOBALS['pdo']->query($sql);
-        while ($tag = $statement->fetchColumn()) {
-            $tags[] = sprintf("<a href=\"/vocab.php?tag=%s\" title=\"view all entries tagged '%s'\">%s</a>", urlencode($tag), htmlspecialchars($tag), $tag);
+        if ($tags = $this->getTags()) {
+            $tags = array_map(function($tag) {
+                return sprintf("<a href=\"/vocab.php?tag=%s\" title=\"view all entries tagged '%s'\">%s</a>", urlencode($tag), htmlspecialchars($tag), $tag);
+            }, $tags);
         }
         
         $this->pinyin = trim($this->pinyin);
@@ -48,8 +53,8 @@ class Vocab {
         <dl id="vocab-<?=$this->vocab_id?>" class="vocab<?=$posclass?>">
             <dt>
                 <div class="num"><?=$vcount?> of <?=$rownum?></div>
-                <big class="hz hz-jt"><?=$this->hanzi_jt?></big>
-                <big class="hz hz-ft"><?=$this->hanzi_ft?></big>
+                <big class="hz hz-jt" lang="zh-Hans"><?=$this->hanzi_jt?></big>
+                <big class="hz hz-ft" lang="zh-Hant"><?=$this->hanzi_ft?></big>
             </dt>
             <dd class="pinyin"><?=$py?></dd>
             <dd class="definitions"><?=$this->definitions?></dd>
@@ -66,18 +71,22 @@ class Vocab {
                 }
                 echo '</dd>';
             }
+            if (!empty($tags)) {
+                echo '<dd class="extras"><ul class="tags"><li>'.implode("</li><li>", $tags).'</li></ul></dd>';
+            }
+            if (isset($this->vocab_id)) {
+                ?>
+                <dd class="extras">
+                    <ul class="controls">
+                        <li class="mark known" rel="check"><a href="#check" title="mark this entry as known and show it less frequently">&#10004;</a></li>
+                        <li class="mark unknown" rel="question"><a href="#question" title="mark this entry as unknown and show it more frequently">?</a></li>
+                        <li><a href="#edit" title="edit this entry" class="editvocab" rel="<?=$this->vocab_id?>">edit</a></li>
+                        <li class="exlink mdbg"><a href="http://www.mdbg.net/chindict/chindict.php?wdqb=*<?=$this->hanzi_jt?>*&wdrst=0" target="_blank" title="search for this on MDGB Chinese-English Dictionary">MDBG</a></li>
+                    </ul>
+                </dd>
+                <?
+            }
             ?>
-            <dd class="extras">
-                
-                <? if (count($tags) > 0) echo '<ul class="tags"><li>'.implode("</li><li>", $tags).'</li></ul>'; ?>
-                
-                <ul class="controls">
-                    <li class="mark known" rel="check"><a href="#check" title="mark this entry as known and show it less frequently">&#10004;</a></li>
-                    <li class="mark unknown" rel="question"><a href="#question" title="mark this entry as unknown and show it more frequently">?</a></li>
-                    <li><a href="#edit" title="edit this entry" class="editvocab" rel="<?=$this->vocab_id?>">edit</a></li>
-                    <li class="exlink mdbg"><a href="http://www.mdbg.net/chindict/chindict.php?wdqb=*<?=$this->hanzi_jt?>*&wdrst=0" target="_blank" title="search for this on MDGB Chinese-English Dictionary">MDBG</a></li>
-                </ul>
-            </dd>
         </dl>
         <?php
     }
@@ -85,18 +94,16 @@ class Vocab {
     public static function get($params, $pdo, $logger=[]): ?array
     {
         $where = array();
-        $execute = array();
         foreach ($params as $key => $value) {
             $where[] = "`$key`=:$key";
-            $execute[$key] = $value;
         }
-        $sql = sprintf("SELECT * FROM vocab INNER JOIN zhongwen USING (zid) WHERE %s;", implode(" AND ", $where));
+        $sql = sprintf("SELECT * FROM vocab RIGHT JOIN zhongwen USING (zid) WHERE %s;", implode(" AND ", $where));
         $statement = $pdo->prepare($sql);
-        $statement->execute($execute);
+        $statement->execute($params);
 
         $rows = $statement->fetchAll();
         if (empty($rows)) {
-            if (!empty($logger)) $logger->debug(sprintf("Vocab::get Empty result [%s]", $sql), $execute);
+            if (!empty($logger)) $logger->debug(sprintf("Vocab::get Empty result [%s]", $sql), $params);
             return null;
         }
         if (!empty($logger)) $logger->debug(sprintf("Vocab::get [%s]", $sql), $rows);
@@ -106,6 +113,18 @@ class Vocab {
         }
         
         return $rows;
+    }
+
+    public function getTags(): ?array
+    {
+        $sql = "SELECT tag FROM tags WHERE vocab_id=?";
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute([$this->vocab_id]);
+        $tags = $statement->fetchAll(\PDO::FETCH_COLUMN);
+
+        if (empty($tags)) return null;
+
+        return $tags;
     }
 
     public function insert()
@@ -145,6 +164,37 @@ class Vocab {
         return true;
     }
     
+    /**
+     * Update the current user in the database
+     * @return Boolean    
+     */
+    public function save(): bool
+    {
+        if (!$this->vocab_id)
+            throw new Exception("Couldn't save Vocab: The vocab id hasn't been set.");
+
+        $save_fields = [
+            "memorized" => $this->memorized, 
+            "frequency" => $this->frequency
+        ];
+
+        $sql = "UPDATE `vocab` SET %s WHERE `vocab_id`=%d";
+        $sql_set = array();
+        foreach ($save_fields as $key => $value) {
+            $sql_set[] = "`$key`=:$key";
+        }
+        $sql = sprintf($sql, implode(",", $sql_set), $this->vocab_id);
+        $statement = $this->pdo->prepare($sql);
+        if (!$statement->execute($save_fields)) {
+            throw new Exception("Error saving Vocab data");
+            if ($this->logger) $this->logger->error("Error saving Vocab data at Vocab::save()", $save_fields);
+        }
+
+        if ($this->logger) $this->logger->info("Save Vocab data ", $save_fields);
+
+        return true;
+    }
+
     public function delete(): bool
     {
         if (!$this->vocab_id)

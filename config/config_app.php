@@ -22,6 +22,8 @@ session_start();
 $logger = new Logger('app');
 // Register a handler -- file loc and minimum error level to record
 $logger->pushHandler(new Monolog\Handler\StreamHandler(__DIR__."/../var/logs/app.log", (ENVIRONMENT == "development" ? Logger::DEBUG : Logger::INFO)));
+// Inject details of error source
+$logger->pushProcessor(new IntrospectionProcessor(Logger::ERROR));
 
 // Catch uncaught exceptions
 set_exception_handler(function (\Throwable $e) {

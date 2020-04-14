@@ -42,6 +42,20 @@ class VocabTest extends TestCase
         $vocab->insert();
     }
 
+    /**
+     * @depends testInsertVocab
+     */
+    public function testSaveVocab(Vocab $vocab)
+    {
+        $vocab->frequency = 99;
+        $vocab->memorized = 1;
+        $this->assertTrue($vocab->save());
+
+        $vocab_check = Vocab::get(["vocab_id"=>$vocab->vocab_id], $GLOBALS['pdo'], $GLOBALS['logger_tests'])[0];
+        $this->assertEquals($vocab->frequency, $vocab_check->frequency);
+        $this->assertEquals($vocab->memorized, $vocab_check->memorized);
+    }
+
     public function testGetVocab()
     {
         $get_params = [
