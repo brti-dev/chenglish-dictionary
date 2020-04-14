@@ -11,6 +11,10 @@ An app for Chinese language learners. Includes a massive Chinese-English diction
 
 Dependencies listed in [composer.json](composer.json); Set up your environment: `composer i`
 
+## Tests
+
+Tests can be run with [https://phpunit.de/](PHPUnit) within the `tests` folder. A database facsimile on your local machine is required for most tests.
+
 ## Contributing
 
 Contributions welcome!
@@ -28,9 +32,9 @@ Contributions welcome!
 ## Todo
 
 * ~Convert mysql to pdo~
-* Classes to manage db tables and app functions
+* ~Classes to manage db tables and app functions~
     * ~User class~
-    * Vocab class
+    * ~Vocab class~
     * ~Zhongwen class~
 * Responsive CSS
 * Flashcads swipe for mobile
