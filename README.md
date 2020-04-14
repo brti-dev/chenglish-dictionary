@@ -13,7 +13,7 @@ Dependencies listed in [composer.json](composer.json); Set up your environment: 
 
 ## Tests
 
-Tests can be run with [https://phpunit.de/](PHPUnit) within the `tests` folder. A database facsimile on your local machine is required for most tests.
+Tests can be run with [PHPUnit](https://phpunit.de/) within the `tests` folder. A database facsimile on your local machine is required for most tests.
 
 ## Contributing
 
