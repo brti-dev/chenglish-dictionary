@@ -10,13 +10,13 @@ $page_title = $page_title ? strip_tags($page_title) : "PCE Dictionary";
 		<title><?=$page_title?></title>
 		<link rel="shortcut icon" href="/favicon.ico">
 		<link rel="stylesheet" type="text/css" href="/assets/css/screen.css">
-		<script type="text/javascript" src="/assets/script/jquery-1.4.2.js"></script>
+		<script type="text/javascript" src="/assets/script/jquery-3.5.0.min.js"></script>
 		<script type="text/javascript" src="/assets/script/global.js"></script>
 		<script type="text/javascript" src="/assets/script/jquery.tooltip.js"></script>
 		<?=$page_javascript?>
 	</head>
 	<body style="background-image:url('/assets/img/bg<?=rand(0,6)?>.png');">
-<?php
+<?
 
 //outp errors, warnings & results
 if($errors || $results || $warnings) {
@@ -106,7 +106,7 @@ $rand = rand(1,5); //generate random # for header img
 		<div class="container">
 			<?
 			if (isset($_SESSION['logged_in'])) {
-				$user_name = strstr($active_user->data['email'], "@", true);
+				$user_name = strstr($current_user->data['email'], "@", true);
 				echo '<b>Welcome, '.$user_name.'</b> <a href="/login.php?do=logout">Log out</a>';
 			} else {
 				?>

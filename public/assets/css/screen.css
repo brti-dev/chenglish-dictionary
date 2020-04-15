@@ -354,7 +354,7 @@ template {
   display: none;
 }
 
-/* END NORMALIZE */
+/* END NORMAliZE */
 
 body {
   padding: 1em 0;
@@ -645,10 +645,13 @@ h1 a span {
 	position: absolute;
 	top: 0;
 	left: 235px;
-	border: 1px solid #DDD; }
+	border: 1px solid #ddd; }
   #login .container {
-  	padding: 1px 5px 5px;
-  	background: url(/assets/img/white_bg_80.png) repeat 0 0; }
+  	padding: 0.5em;
+  	background-color: rgba(255, 255, 255, 0.8); }
+  #login form {
+    display: block;
+    margin-top: 0.5em; }
 
 #footer {
 	margin: 30px 0;
@@ -713,7 +716,7 @@ input[type=button], button, input[type=submit], input[type=reset] {
 	padding-bottom: 2px;
 	font-size: 13px;
 	font-family: Arial;
-	background: #DDD url(/assets/img/styled-button-bg.png) repeat-x 0 0;
+	background: #ddD url(/assets/img/styled-button-bg.png) repeat-x 0 0;
 	border-width: 1px;
 	border-style: solid;
 	border-color: #BBB #AAA #AAA #BBB;
@@ -753,44 +756,37 @@ input[type=button].down, input[type=submit].down, input[type=reset].down {
 /* general styles */
 
 h2 {
-	background-color:white;
-	border:1px solid #DDDDDD;
+	background-color: rgba(255, 255, 255, 0.8);
+	border: 1px solid #dddddd;
 	font-family: Georgia,Helvetica,Arial,STXihei,Stheiti,SimSun,PMingLiU,SimHei,"Arial Unicode MS","TITUS Cyberbit Basic","Bitstream Cyberbit","Lucida Sans Unicode",Sans-Serif;
-	font-size:31px;
-	font-weight:normal;
-	margin:20px 0;
-	padding:2px 8px;
-}
+	font-weight: normal;
+	padding: 0.1em 0.25em; }
 
-TABLE.results {
+table.results {
 	border-width: 0 0 1px 1px;
 	border-style: solid;
-	border-color: #CCC;
-}
-TABLE.results TR.over td {
-	background-color: #FFFFB7;
-}
-TABLE.results th, TABLE.results td {
+	border-color: #CCC; }
+table.results tr.over td {
+	background-color: #FFFFB7; }
+table.results th, table.results td {
 	padding: 6px 8px;
 	border-width: 1px 1px 0 0;
 	border-style: solid;
 	border-color: #CCC;
-	background-color: white;
-}
-TABLE.results th {
+	background-color: white; }
+table.results th {
 	font-weight: normal;
 	color: #666;
 	text-align: left;
 	white-space: nowrap;
-	background-color: #EEE;
-}
+	background-color: #EEE; }
 .hz {
 	font-family:標楷體,Helvetica,Arial,STXihei,Stheiti,SimSun,PMingLiU,SimHei,"Arial Unicode MS","TITUS Cyberbit Basic","Bitstream Cyberbit","Lucida Sans Unicode",Sans-Serif;
 }
-BIG.hz {
+big.hz {
 	font-size: 200%;
 }
-.hz A {
+.hz a {
 	text-decoration: none;
 }
 .results td .hz { display:block; width:159px; }
@@ -802,62 +798,80 @@ BIG.hz {
 	background-color: #FFFF9F;
 }
 
-.vocablist DL {
+.vocab-container {}
+  .vocab-container fieldset {
+    margin: 1em 0; }
+
+#vocablistsel {}
+  #vocablistsel table {
+    background-color: white; }
+
+.vocablist dl {
 	width:90%;
 	margin: 10px 0 0;
-	padding: 5px 0 20px;
-}
-.vocablist DL DT { margin:0; padding:0; }
-.vocablist DT .num {
-	display: none;
-}
-.vocablist BIG.hz {
-	font-size: 55px;
-}
-.vocablist .hz-ft {
-	display: none;
-}
-.vocablist DL DD {
-	margin:5px 0 0; padding:0;
-	clear: both;
-}
-.vocablist DL DD.pinyin {
-	margin-left: 0;
-}
-.vocablist DL DD.pinyin td {
-	width: 55px;
-	white-space: nowrap;
-	text-align: center;
-	font: normal 14px Arial;
-}
-.vocablist DL DD.definitions, .vocablist DL DD.compounds {
-	padding: 0 0 0 23px;
-	background: url(/assets/img/arrow-small-gray-right.png) no-repeat 10px 8px;
-	font-family:Helvetica,Arial,STXihei,Stheiti,SimSun,PMingLiU,SimHei;
-}
+	padding: 5px 0 20px; }
+  .vocablist dl dt { margin:0; padding:0; }
+  .vocablist dt .num {
+  	display: none; }
+  .vocablist big.hz {
+  	font-size: 55px; }
+  .vocablist .hz-ft {
+  	display: none; }
+  .vocablist dl dd {
+  	margin:5px 0 0; padding:0;
+  	clear: both; }
+  .vocablist dl dd.pinyin {
+  	margin-left: 0;
+    display: block; }
+  .vocablist dl dd.pinyin span {
+    display: block;
+    float: left;
+  	width: 55px;
+  	white-space: nowrap;
+  	text-align: center;
+  	font: normal 14px Arial; }
+  .vocablist dl dd.definitions, .vocablist dl dd.compounds {
+  	padding: 0 0 0 23px;
+  	background: url(/assets/img/arrow-small-gray-right.png) no-repeat 10px 8px;
+  	font-family:Helvetica,Arial,STXihei,Stheiti,SimSun,PMingLiU,SimHei; }
+  .vocablist .error .hz, .vocablist .error .definitions {
+    color: red; }
+  .vocablist dl dd.pinyin:after { 
+   content: "."; 
+   visibility: hidden; 
+   display: block; 
+   height: 0; 
+   clear: both; }
 
 .vocablist .extras {}
-.vocablist .extras UL { clear:both; height:23px; margin:0; padding:0; list-style:none; }
-.vocablist .extras UL + UL { margin:8px 0 0; }
-.vocablist .fcards .extras UL + UL { margin:15px 0 0; }
-.vocablist .extras UL LI { float:left; }
-.vocablist .extras UL LI A {
+.vocablist .extras ul { clear:both; height:23px; margin:0; padding:0; list-style:none; }
+.vocablist .extras ul + ul { margin:8px 0 0; }
+.vocablist .fcards .extras ul + ul { margin:15px 0 0; }
+.vocablist .extras ul li { float:left; }
+.vocablist .extras ul li a {
 	display: block;
-	margin:0 8px 0 0;
+	margin: 0 8px 0 0;
 	padding: 3px 8px;
-	font-size:13px; font-family:Arial; color: #03C;
-	border:1px solid #CCC; border-radius:2px; -moz-border-radius:2px; -webkit-border-radius:2px;
-}
-.vocablist .extras UL LI A:hover { background-color:#CCC; }
+	font-size: 0.9em; font-family: Arial; 
+  line-height: 1em;
+  color: #03c;
+	border: 1px solid #CCC; border-radius:2px; }
+.vocablist .extras ul li a:hover { background-color:#CCC; }
 
-.vocablist .fcards LI.mark { position:absolute; top:8px; right:0; }
-.vocablist .fcards LI.known { right:40px; }
-.vocablist .extras LI.mark A { background:url(/assets/img/gradient_green_sm.png) repeat-x 0 0; }
-.vocablist .extras LI.mark A:hover { background-position:0 -38px; }
-.vocablist .extras LI.unknown A { background-image:url(/assets/img/gradient_red_sm.png); }
-.vocablist .extras LI.marked A { background-image:none !important; background-color:#CCC; }
+.vocablist .fcards li.mark { position:absolute; top:8px; right:0; }
+.vocablist .fcards li.known { right:40px; }
+.vocablist .extras li.mark a {
+  width: 2.2em;
+  text-decoration: none; 
+  color: white; 
+  font-weight: bold; 
+  text-align:center; 
+  background:url(/assets/img/gradient_green_sm.png) repeat-x 0 0; }
+.vocablist .extras li.mark a:hover { background-position:0 -38px; }
+.vocablist .extras li.unknown a { background-image:url(/assets/img/gradient_red_sm.png); }
+.vocablist .extras li.marked a { background-image:none !important; background-color:#CCC; }
 
-.vocablist DL DT.toggle-vis .hz, .vocablist DL DD.toggle-vis {
+.vocablist dl dt.toggle-vis .hz, .vocablist dl dd.toggle-vis {
 	visibility: hidden;
 }
 
@@ -888,7 +902,7 @@ BIG.hz {
 	width: 100%;
 	height: 600px;
 }
-.vocablist .fcards DL {
+.vocablist .fcards dl {
 	display: none;
 	position:absolute; z-index:1;
 	float: left;
@@ -898,12 +912,12 @@ BIG.hz {
 	text-align: center;
 	border-width: 1px 2px 2px 1px;
 	border-style: solid;
-	border-color: #DDD #BBB #BBB #DDD;
+	border-color: #ddD #BBB #BBB #ddD;
 }
-.vocablist .fcards DL.fcnav-curr {
+.vocablist .fcards dl.fcnav-curr {
 	display: block;
 }
-.vocablist .fcards DT .num {
+.vocablist .fcards dt .num {
 	display: block;
 	position: absolute;
 	top: 10px;
@@ -911,7 +925,7 @@ BIG.hz {
 	font: normal 13px arial;
 	color: #777;
 }
-.vocablist .fcards BIG.hz {
+.vocablist .fcards big.hz {
 	font-family: Helvetica,Arial,"標楷體",STXihei,Stheiti,SimSun,PMingLiU,SimHei,"Arial Unicode MS","TITUS Cyberbit Basic","Bitstream Cyberbit","Lucida Sans Unicode",Sans-Serif;
 	font-size: 115px;
 }
@@ -922,7 +936,7 @@ BIG.hz {
 .vocablist .fcards .ftz .paren {
 	display: none;
 }
-.vocablist .fcards .pinyin TABLE {
+.vocablist .fcards .pinyin table {
 	margin: 0 auto;
 }
 .vocablist .fcards .pinyin td {
@@ -932,7 +946,7 @@ BIG.hz {
 .vocablist .fcards .definitions {
 	margin: 15px 0 0;
 	padding: 15px 0 0;
-	border-top: 1px solid #DDD;
+	border-top: 1px solid #ddD;
 	background-image: none;
 	text-align: left;
 }
@@ -945,20 +959,30 @@ BIG.hz {
 	margin: 15px 0 0;
 	border-width: 1px 0 0;
 }
-.vocablist .fcards .extras UL {}
-.vocablist .fcards .extras UL LI {}
-.vocablist .fcards .extras UL LI A {}
+.vocablist .fcards .extras ul {}
+.vocablist .fcards .extras ul li {}
+.vocablist .fcards .extras ul li a {}
 
-TABLE.vocab-aded {}
-TABLE.vocab-aded th {
+form.vocab {}
+  form.vocab ul {
+    margin:0; 
+    padding:0; 
+    list-style:none; }
+    form.vocab ul li {
+       margin: 0 0 5px; }
+  form.vocab input[type=submit] {
+    font-weight: bold; }
+
+table.vocab-aded {}
+table.vocab-aded th {
 	padding: 30px 20px 0 0;
 	text-align: right;
 	vertical-align: top;
 }
-TABLE.vocab-aded td {
+table.vocab-aded td {
 	padding:30px 0 0;
 }
-TABLE.vocab-aded TBODY TR:first-child td, TABLE.vocab-aded TBODY TR:first-child th { padding-top:0 !important; }
+table.vocab-aded tbody tr:first-child td, table.vocab-aded tbody tr:first-child th { padding-top:0 !important; }
 
 #box {
 	display:none;
@@ -973,7 +997,7 @@ TABLE.vocab-aded TBODY TR:first-child td, TABLE.vocab-aded TBODY TR:first-child 
 	opacity:.92;
 }
 #box, #box td, #box th { font-size:13px; font-family:Arial; }
-#box > A { float:right; color:#E32828; }
+#box > a { float:right; color:#E32828; }
 #box h2 { margin:0 0 10px; padding:0 0 10px; border-width:0 0 1px; }
 
-#listcontrols A:hover IMG { opacity:.7 !important; }
+#listcontrols a:hover IMG { opacity:.7 !important; }

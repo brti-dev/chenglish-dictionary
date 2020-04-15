@@ -2,13 +2,35 @@
 
 namespace Pced;
 
+use Pced\PrimezeroTools;
+
 require_once __DIR__."/../config/config_db.php";
 
 class Vocab {
 
     private $initialized = false;
+
     private $pdo;
+    
     private $logger;
+
+    private $vocab_id;
+
+    private $user_id;
+
+    private $zid;
+
+    /**
+     * User-determined switch to indicate she memorized this vocab item
+     * @var integer True=1; False=0;
+     */
+    public $memorized = 0;
+
+    /**
+     * Indicates familiarity and frequency with which the vocab item should appear
+     * @var integer
+     */
+    public $frequency = 0;
 
     /**
      * Class constructor
@@ -20,7 +42,11 @@ class Vocab {
     public function __construct(array $row, $pdo, $logger=[]) 
     {
         foreach ($row as $key => $value) {
-            $this->{$key} = $value;
+            if ($key == "frequency" || $key == "memorized") {
+                $this->{$key} = (int) $value;
+            } else {
+                $this->{$key} = $value;
+            }
         }
 
         $this->initialized = true;
@@ -32,63 +58,6 @@ class Vocab {
         }
 
         return $this;
-    }
-
-    public function renderHTML()
-    {        
-        if (!$this->initialized) {}
-
-        $this->definitions = preg_replace("@^/|/$@", "", $this->definitions);
-        $this->definitions = str_replace("/", ' &nbsp;<span style="color:#AAA;">/</span>&nbsp; ', $this->definitions);
-        
-        if ($tags = $this->getTags()) {
-            $tags = array_map(function($tag) {
-                return sprintf("<a href=\"/vocab.php?tag=%s\" title=\"view all entries tagged '%s'\">%s</a>", urlencode($tag), htmlspecialchars($tag), $tag);
-            }, $tags);
-        }
-        
-        $this->pinyin = trim($this->pinyin);
-        $py = '<table border="0" cellpadding="0" cellspacing="0"><tr><td>'.str_replace(" ", '</td><td>', $this->pinyin).'</td></tr></table>';
-        ?>
-        <dl id="vocab-<?=$this->vocab_id?>" class="vocab<?=$posclass?>">
-            <dt>
-                <div class="num"><?=$vcount?> of <?=$rownum?></div>
-                <big class="hz hz-jt" lang="zh-Hans"><?=$this->hanzi_jt?></big>
-                <big class="hz hz-ft" lang="zh-Hant"><?=$this->hanzi_ft?></big>
-            </dt>
-            <dd class="pinyin"><?=$py?></dd>
-            <dd class="definitions"><?=$this->definitions?></dd>
-            <?
-            //compounds
-            $sql = "SELECT hanzi_jt, pinyin, definitions FROM zhongwen WHERE hanzi_jt LIKE '%".$this->hanzi_jt."%' AND hanzi_jt != '".$this->hanzi_jt."'";
-            $statement = $GLOBALS['pdo']->query($sql);
-            if ($rows = $statement->fetchAll(\PDO::FETCH_CLASS, "Pced\\Zhongwen")) {
-                echo '<dd class="compounds hz">';
-                foreach ($rows as $zhongwen_compound) {
-                    $def = substr($zhongwen_compound->definitions, 1, -1);
-                    $def = htmlspecialchars($def);
-                    echo '<a href="/search.php?query=*'.$zhongwen_compound->hanzi_jt.'*" title="'.$zhongwen_compound->pinyin.'&lt;br/&gt;'.$def.'" class="tooltip">'.$zhongwen_compound->hanzi_jt.'</a> &nbsp;&nbsp; ';
-                }
-                echo '</dd>';
-            }
-            if (!empty($tags)) {
-                echo '<dd class="extras"><ul class="tags"><li>'.implode("</li><li>", $tags).'</li></ul></dd>';
-            }
-            if (isset($this->vocab_id)) {
-                ?>
-                <dd class="extras">
-                    <ul class="controls">
-                        <li class="mark known" rel="check"><a href="#check" title="mark this entry as known and show it less frequently">&#10004;</a></li>
-                        <li class="mark unknown" rel="question"><a href="#question" title="mark this entry as unknown and show it more frequently">?</a></li>
-                        <li><a href="#edit" title="edit this entry" class="editvocab" rel="<?=$this->vocab_id?>">edit</a></li>
-                        <li class="exlink mdbg"><a href="http://www.mdbg.net/chindict/chindict.php?wdqb=*<?=$this->hanzi_jt?>*&wdrst=0" target="_blank" title="search for this on MDGB Chinese-English Dictionary">MDBG</a></li>
-                    </ul>
-                </dd>
-                <?
-            }
-            ?>
-        </dl>
-        <?php
     }
 
     public static function get($params, $pdo, $logger=[]): ?array
@@ -113,6 +82,21 @@ class Vocab {
         }
         
         return $rows;
+    }
+
+    public function getId()
+    {
+        return $this->vocab_id;
+    }
+
+    public function getZid()
+    {
+        return $this->zid;
+    }
+
+    public function getUserId()
+    {
+        return $this->user_id;
     }
 
     public function getTags(): ?array
@@ -207,5 +191,77 @@ class Vocab {
         if (isset($this->logger)) $this->logger->info("DELETE vocab vocab_id:".$this->vocab_id);
 
         return true;
+    }
+
+    public function renderHTML()
+    {        
+        if (!$this->initialized) {}
+
+        $this->definitions = preg_replace("@^/|/$@", "", $this->definitions);
+        $this->definitions = str_replace("/", ' &nbsp;<span style="color:#AAA;">/</span>&nbsp; ', $this->definitions);
+        
+        if (isset($this->vocab_id) && $tags = $this->getTags()) {
+            $tags = array_map(function($tag) {
+                return sprintf("<a href=\"/vocab.php?tag=%s\" title=\"view all entries tagged '%s'\">%s</a>", urlencode($tag), htmlspecialchars($tag), $tag);
+            }, $tags);
+        }
+
+        $pz = new PrimezeroTools;
+        $this->pinyin = trim($this->pinyin);
+        $this->pinyin = $pz->pzpinyin_tonedisplay_convert_to_mark($this->pinyin);
+
+        ?>
+        <dl id="vocab-<?=$this->vocab_id?>" class="vocab <?=$this->class?>" data-vocab_id="<?=$this->vocab_id?>">
+            <dt>
+                <div class="num"><?=$vcount?> of <?=$rownum?></div>
+                <big class="hz hz-jt" lang="zh-Hans"><?=$this->hanzi_jt?></big>
+                <big class="hz hz-ft" lang="zh-Hant"><?=$this->hanzi_ft?></big>
+            </dt>
+            <dd class="pinyin"><span><?=str_replace(" ", '</span><span>', $this->pinyin)?></span></dd>
+            <dd class="definitions"><?=$this->definitions?></dd>
+            <?
+            //compounds
+            if (isset($this->user_id)) {
+                $sql = "SELECT hanzi_jt, pinyin, definitions FROM zhongwen WHERE hanzi_jt LIKE '%".$this->hanzi_jt."%' AND hanzi_jt != '".$this->hanzi_jt."'";
+                $statement = $this->pdo->query($sql);
+                if ($rows = $statement->fetchAll(\PDO::FETCH_CLASS, "Pced\\Zhongwen")) {
+                    echo '<dd class="compounds hz">';
+                    foreach ($rows as $zhongwen_compound) {
+                        $def = substr($zhongwen_compound->definitions, 1, -1);
+                        $def = htmlspecialchars($def);
+                        echo '<a href="/search.php?query=*'.$zhongwen_compound->hanzi_jt.'*" title="'.$zhongwen_compound->pinyin.'&lt;br/&gt;'.$def.'" class="tooltip">'.$zhongwen_compound->hanzi_jt.'</a> &nbsp;&nbsp; ';
+                    }
+                    echo '</dd>';
+                }
+            }
+
+            //tags
+            if (!empty($tags)) {
+                echo '<dd class="extras"><ul class="tags"><li>'.implode("</li><li>", $tags).'</li></ul></dd>';
+            }
+            
+            //controls
+            if (isset($this->vocab_id)) {
+                ?>
+                <dd class="extras">
+                    <ul class="controls">
+                        <li class="mark known" rel="check"><a href="#check" title="mark this entry as known and show it less frequently" onclick="markVocab(this,'check');return false;">&#10004;</a></li>
+                        <li class="mark unknown" rel="question"><a href="#question" title="mark this entry as unknown and show it more frequently" onclick="markVocab(this,'question');return false;">?</a></li>
+                        <li><a href="#edit" title="edit this entry" class="editvocab" rel="<?=$this->vocab_id?>" onclick="editVocab(<?=$this->vocab_id?>);return false;">edit</a></li>
+                        <li class="exlink mdbg"><a href="http://www.mdbg.net/chindict/chindict.php?wdqb=*<?=$this->hanzi_jt?>*&wdrst=0" target="_blank" title="search for this on MDGB Chinese-English Dictionary">MDBG</a></li>
+                    </ul>
+                </dd>
+                <?
+            }
+            ?>
+        </dl>
+        <?php
+    }
+
+    public static function renderError($message)
+    {
+        $message = sprintf("/Error/%s/", $message);
+        $vocab = new self(["hanzi_ft"=>"故障", "hanzi_jt"=>"故障", "pinyin"=>"gu4 zhang4", "definitions"=>$message, "class"=>"error"], null);
+        $vocab->renderHTML();
     }
 }
