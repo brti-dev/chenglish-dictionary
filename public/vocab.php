@@ -13,7 +13,6 @@ $q = trim($q);
 $q = str_replace("*", "%", $q);
 
 $page_title = APP_NAME .  " / My Vocabulary";
-$page_javascript.= "<script type=\"text/javascript\" src=\"/assets/script/vocab.js\"></script>";
 
 if($_POST['_action'] == "delete") {
 	
@@ -56,17 +55,19 @@ if($_POST['_action'] == "mark") {
 		}
 		
 		$get_params = ['vocab_id'=>$vocab_id, 'user_id'=>$current_user->getId()];
-		$vocab = Vocab::get($get_params, $pdo, $logger);
+		$vocab = Vocab::get($get_params, $pdo, $logger)[0];
 		if (is_null($vocab)) {
 			throw new Exception("Error finding that vocab entry");
 		}
 		
-		$vocab->frequency = ($_POST['_act'] == "check" ? ++$vocab->frequency : --$vocab->frequency);
+		if ($_POST['_act'] == "check") {
+			$vocab->frequency += 1;
+		} else {
+			$vocab->frequency -= 1;
+		}
 		$vocab->save();
 	} catch (Exception $e) {
 		Echo "Couldn't update memorization mark: " . $e->getMessage();
-	}
-
 	}
 	
 	exit;
@@ -144,10 +145,7 @@ if (isset($_POST['submit_add'])) {
 		$vocab->insert();
 	} catch (Exception $e) {
 		include __DIR__."/../templates/page_header.php";
-		?>
-		<h2>Error Adding Vocab</h2>
-		<p><?=$e->getMessage()?></p>
-		<?
+		Vocab::renderError($e->getMessage());
 		include __DIR__."/../templates/page_footer.php";
 		exit;
 	}
@@ -244,7 +242,7 @@ if($vocab_id = filter_input(INPUT_POST, "edit")) {
 
 	$vocab = $vocab[0];
 	
-	if ($vocab->user_id != $_SESSION['user_id']) {
+	if ($vocab->getUserId() != $current_user->getId()) {
 		die("There was an error reconciling the vocab item with your account.");
 	}
 	
@@ -300,34 +298,39 @@ if (isset($_POST['submit_edit'])) {
 	$vocab_id = filter_var($vocab_id, FILTER_SANITIZE_NUMBER_INT);
 	$ret = array();
 
-	$pdo->beginTransaction();
 	try {
+		$pdo->beginTransaction();
+
+		// Delete all tags before adding given tags
 		$sql = "DELETE FROM tags WHERE vocab_id=?";
-		$statement = $pdo->prepare($sql);
-		$statement->execute([$vocab_id]);
+		$delete_statement = $pdo->prepare($sql);
+		$delete_statement->execute([$vocab_id]);
 
 		if (count($tags)) {
+			$tags = array_unique($tags);
 			$tag_queries = [];
-			foreach ($tags as &$tag) {
+			foreach ($tags as $i => &$tag) {
 				$tag = trim($tag);
 				$tag = filter_var($tag, FILTER_SANITIZE_SPECIAL_CHARS);
 				if (empty($tag)) {
-					unset($tag);
+					unset($tags[$i]);
 				} else {
-					$tag_queries[] = "('".$current_user->getId()."', ?, '".$vocab_id."')";
+					$tag_queries[] = sprintf("(%d, ?, %d)", $current_user->getId(), $vocab_id);
 				}
 			}
-			if ($tag_queries) {
+			if (!empty($tag_queries)) {
 				$sql = sprintf("INSERT INTO tags (user_id, tag, vocab_id) VALUES %s;", implode(",", $tag_queries));
-				$statement = $pdo->prepare($sql);
-				$statement->execute($tags);
+				$insert_statement = $pdo->prepare($sql);
+				$insert_statement->execute($tags);
 			}
 		}
 
 		$pdo->commit();
-	} catch (PDOException $e) {
+	} catch (Exception $e) {
 	    $pdo->rollBack();
-	    die("There was an error updating tag information");
+	    $logger->error($e);
+	    Vocab::renderError("There was an error updating tag information");
+	    exit;
 	}
 	
 	$vocab = Vocab::get(["vocab_id" => $vocab_id], $pdo, $logger)[0];

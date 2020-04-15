@@ -61,18 +61,18 @@ if (!$query) {
 		$like = "";
 		$execute = ["user_id" => $current_user->getId()];
 		if ($in_defs) {
-			$like.= "definitions LIKE CONCAT('%', :query_definition, '%') OR ";
+			$like.= "zhongwen.definitions LIKE CONCAT('%', :query_definition, '%') OR ";
 			$execute['query_definition'] = $query_definition;
 		}
 		if ($hanzi) {
-			$like.= "(hanzi_jt LIKE :query OR hanzi_ft LIKE :query) ";
+			$like.= "(zhongwen.hanzi_jt LIKE :query OR zhongwen.hanzi_ft LIKE :query) ";
 			$execute['query'] = $query;
 		}
 		elseif ($pinyin) {
-			$like.= "pinyin LIKE CONCAT('%', :pinyin, '%') ";
+			$like.= "zhongwen.pinyin LIKE CONCAT('%', :pinyin, '%') ";
 			$execute['pinyin'] = $pinyin;
 		}
-		$sql = "SELECT * FROM vocab INNER JOIN zhongwen USING (zid) WHERE user_id=:user_id AND $like LIMIT 0, 100;";
+		$sql = "SELECT * FROM vocab LEFT JOIN zhongwen USING (zid) WHERE user_id=:user_id AND ($like) LIMIT 0, 100;";
 		$statement = $pdo->prepare($sql);
 		$statement->execute($execute);
 		

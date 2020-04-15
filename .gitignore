@@ -6,3 +6,4 @@ log
 composer.phar
 /vendor/
 /var/
+/public/assets/img/

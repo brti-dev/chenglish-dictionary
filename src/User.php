@@ -2,7 +2,6 @@
 
 namespace Pced;
 
-use Pced\Exception;
 use Pced\Vocab;
 
 class User {

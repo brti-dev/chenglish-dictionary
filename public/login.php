@@ -124,6 +124,8 @@ if(isset($_POST['submit_registration'])) {
 		$user = new User($user_params, $GLOBALS['pdo'], $logger);
 		$user->insert();
 	} catch (Exception $e) {
+		$logger->error($e);
+		
 		$page_title = APP_NAME .  " / Register Error";
 		include __DIR__."/../templates/page_header.php";
 		?>
@@ -150,7 +152,8 @@ if(isset($_POST['submit_registration'])) {
             "tags" => [$tag], 
             "user_id" => $user->getId(),
         ];
-        Vocab::insert($insert_params, $pdo, $logger);
+        $vocab = new Vocab($insert_params, $pdo, $logger);
+        $vocab->insert();
     }
 	
 	$page_title = APP_NAME .  " / Register";

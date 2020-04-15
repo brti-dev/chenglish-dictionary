@@ -137,6 +137,11 @@ class Vocab {
 
         if (isset($this->tags)) {
             foreach ($this->tags as $tag) {
+                $tag = trim($tag);
+                $tag = filter_var($tag, FILTER_SANITIZE_SPECIAL_CHARS);
+                if (empty($tag))
+                    continue;
+                
                 $sql = "INSERT INTO tags (tag, vocab_id, user_id) VALUES (?, ?, ?);";
                 $statement = $this->pdo->prepare($sql);
                 $statement->execute([$tag, $this->vocab_id, $this->user_id]);
