@@ -57,7 +57,6 @@ if($nocont) return; // End the header here if $nocont is true
 
 $rand = rand(1,5); //generate random # for header img
 ?>
-<div id="htmlbody">
 <header id="header">
 	
 	<h1 id="top"><a href="/"><span>Personal Chinese-English Dictionary</span></a></h1>
@@ -123,7 +122,5 @@ $rand = rand(1,5); //generate random # for header img
 	</div>
 	
 </header>
-
-<br style="clear:both;"/>
 
 <main id="page">

@@ -10,7 +10,7 @@ require_once __DIR__."/../config/config_app.php";
 include __DIR__."/../templates/page_header.php";
 
 ?>
-<h2><span class="hz" style="font-size:60px; opacity:.85;">欢迎光临!</span></h2>
+<h2><span class="hz" lang="zh">欢迎光临!</span></h2>
 
 <div style="line-height:1.5em">
 
