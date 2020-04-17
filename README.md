@@ -31,10 +31,13 @@ Contributions welcome!
 
 ## Todo
 
-* ~Convert mysql to pdo~
-* ~Classes to manage db tables and app functions~
-    * ~User class~
-    * ~Vocab class~
-    * ~Zhongwen class~
-* Responsive CSS
-* Flashcads swipe for mobile
+* Beck end
+    * ~Convert mysql to pdo~
+    * ~Classes to manage db tables and app functions~
+        * ~User class~
+        * ~Vocab class~
+        * ~Zhongwen class~
+    * API
+* Front end
+    * Responsive CSS
+    * Flashcads swipe for mobile
