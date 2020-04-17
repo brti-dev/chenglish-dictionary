@@ -85,7 +85,7 @@ if($_POST['_action'] == "mark") {
 	exit;
 }*/
 
-if($_POST['action'] == "edit_tag"){
+if ($_POST['action'] == "edit_tag") {
 	
 	// EDIT VOCAB LIST //
 	
@@ -168,61 +168,64 @@ if ($zid = filter_input(INPUT_GET, "add")) {
 	?>
 	<h2>Add Vocab</h2>
 
-	<div class="vocablist">
+	<section class="add-vocab">
 		<?=$vocab->renderHTML()?>
-	</div>
 
-	<form action="vocab.php" method="post" class="vocab">
-		<input type="hidden" name="in[zid]" value="<?=$zid?>"/>
-		<table border="0" cellpadding="0" cellspacing="0" class="vocab-aded">
-			<?
-			// Character decomposition
-			if (mb_strlen($vocab->hanzi_jt) > 1) {
+		<form action="vocab.php" method="post" class="vocab">
+			<input type="hidden" name="in[zid]" value="<?=$zid?>"/>
+			<table border="0" cellpadding="0" cellspacing="0" class="vocab-aded">
+				<?
+				// Character decomposition
+				if (mb_strlen($vocab->hanzi_jt) > 1) {
+					?>
+					<tr>
+						<th>Character Decomposition</th>
+						<td>
+							Also add the following characters to your vocab list:
+							<ul>
+								<?
+								// mb_str_split() only supported in (PHP 7 >= 7.4.0)
+								// foreach (mb_str_split($vocab->hanzi_jt) as $chr) {
+								foreach (str_split_utf8($vocab->hanzi_jt) as $chr) {
+									$zhongwen = Zhongwen::getByHanzi($chr, $pdo)[0];
+									// Check if already in user's vocab
+									if (Vocab::get(["zid"=>$zhongwen->zid, "user_id"=>$current_user->getId()], $pdo))
+										continue;
+									echo '<li><label style="white-space:nowrap"><input type="checkbox" name="in[singlechars][]" value="'.$zhongwen->zid.'"/> <span class="hz" lang="zh">'.$zhongwen->hanzi_jt.'</span>'.($zhongwen->hanzi_jt != $zhongwen->hanzi_ft ? ' <span style="color:#AAA;">(<span class="hz" style="color:black">'.$zhongwen->hanzi_ft.'</span>)</span>' : '').'</label> '.str_replace("/", " / ", $zhongwen->definitions).'</li>';
+								}
+								?>
+							</ul>
+						</td>
+					</tr>
+					<?
+				}
 				?>
 				<tr>
-					<th>Character Decomposition</th>
+					<th valign="top">Lists</th>
 					<td>
-						Also add the following characters to your vocab list:
 						<ul>
 							<?
-							// mb_str_split() only supported in (PHP 7 >= 7.4.0)
-							// foreach (mb_str_split($vocab->hanzi_jt) as $chr) {
-							foreach (str_split_utf8($vocab->hanzi_jt) as $chr) {
-								$zhongwen = Zhongwen::getByHanzi($chr, $pdo)[0];
-								echo '<li><label style="white-space:nowrap"><input type="checkbox" name="in[singlechars][]" value="'.$zhongwen->zid.'"/> <span class="hz" lang="zh">'.$zhongwen->hanzi_jt.'</span>'.($zhongwen->hanzi_jt != $zhongwen->hanzi_ft ? ' <span style="color:#AAA;">(<span class="hz" style="color:black">'.$zhongwen->hanzi_ft.'</span>)</span>' : '').'</label> '.$zhongwen->definitions.'</li>';
+							$sql = "SELECT DISTINCT(tag) AS tag FROM tags WHERE user_id=?";
+							$statement = $pdo->prepare($sql);
+							$statement->execute([$current_user->getId()]);
+							while($tag = $statement->fetchColumn()) {
+								echo '<li><label><input type="checkbox" name="in[tags][]" value="'.$tag.'"/> '.$tag.'</label></li>';
 							}
 							?>
+							<li>
+								<input type="text" name="in[tags][]" maxlength="60" title="Manually input a new or existing list name" class="tooltip"/> &nbsp; 
+								<a href="#append" onclick="$(this).closest('ul').append('&#60;li style=&#34;margin:5px 0;&#34;&#62;&#60;input type=&#34;text&#34; name=&#34;in[tags][]&#34; maxlength=&#34;60&#34; /&#62;&#60;/li&#62;');">Add another</a>
+							</li>
 						</ul>
 					</td>
 				</tr>
-				<?
-			}
-			?>
-			<tr>
-				<th valign="top">Lists</th>
-				<td>
-					<ul>
-						<?
-						$sql = "SELECT DISTINCT(tag) AS tag FROM tags WHERE user_id=?";
-						$statement = $pdo->prepare($sql);
-						$statement->execute([$current_user->getId()]);
-						while($tag = $statement->fetchColumn()) {
-							echo '<li><label><input type="checkbox" name="in[tags][]" value="'.$tag.'"/> '.$tag.'</label></li>';
-						}
-						?>
-						<li>
-							<input type="text" name="in[tags][]" maxlength="60" title="Manually input a new or existing list name" class="tooltip"/> &nbsp; 
-							<a href="#append" onclick="$(this).closest('ul').append('&#60;li style=&#34;margin:5px 0;&#34;&#62;&#60;input type=&#34;text&#34; name=&#34;in[tags][]&#34; maxlength=&#34;60&#34; /&#62;&#60;/li&#62;');">Add another</a>
-						</li>
-					</ul>
-				</td>
-			</tr>
-			<tr>
-				<th>&nbsp;</th>
-				<td><input type="submit" name="submit_add" value="Add Vocab"/></td>
-			</tr>
-		</table>
-	</form>
+				<tr>
+					<th>&nbsp;</th>
+					<td><input type="submit" name="submit_add" value="Add Vocab"/></td>
+				</tr>
+			</table>
+		</form>
+	</section>
 	<?
 	
 	include __DIR__."/../templates/page_footer.php";
@@ -409,40 +412,34 @@ include __DIR__."/../templates/page_header.php";
 <div class="vocab-container">
 
 <div id="vocablistsel">
-	<table border="0" cellpadding="10" cellspacing="0" width="100%">
-		<tr>
-			<?
-			if($tag && !$slist) {
-				?>
-				<td nowrap="nowrap" class="listdetails">
-					<form action="vocab.php" method="post">
-						<input type="hidden" name="action" value="edit_tag"/>
-						<input type="hidden" name="tag" value="<?=htmlSC($tag)?>"/>
-						<details>
-							<summary>List Details</summary>
-							<p>List name: <input type="text" name="listname" value="<?=htmlSC($tag)?>" size="25" maxlength="60"/></p>
-							<p><label><input type="checkbox" name="removelist" value="1"/> Delete this list (but keep all associated vocab)</label></p>
-							<input type="submit" name="edit_tag" value="Submit Changes"/>
-						</details>
-					</form>
-				</td>
-				<?
-			}
-			
-			?><td valign="top" width="100%">
-				<select onchange="document.location='/vocab.php?tag='+this.options[this.selectedIndex].value;">
-					<option value="">Special lists...</option>
-					<option value="">All Vocab</option>
-					<option value="_singlechars" <?=($tag == "_singlechars" ? 'selected="selected"' : '')?>>Single Characters</option>
-					<option value="_recent-1" <?=($tag == "_recent-1" ? 'selected="selected"' : '')?>>Recently Added: 1 day</option>
-					<option value="_recent-3" <?=($tag == "_recent-3" ? 'selected="selected"' : '')?>>Recently Added: 3 days</option>
-					<option value="_recent-7" <?=($tag == "_recent-7" ? 'selected="selected"' : '')?>>Recently Added: 7 days</option>
-					<option value="_recent-14" <?=($tag == "_recent-14" ? 'selected="selected"' : '')?>>Recently Added: 14 days</option>
-					<option value="_recent-30" <?=($tag == "_recent-30" ? 'selected="selected"' : '')?>>Recently Added: 30 days</option>
-				</select>
-			</td>
-		</tr>
-	</table>
+	<?
+	if($tag && !$slist) {
+		?>
+		<div class="listdetails">
+			<form action="vocab.php" method="post">
+				<input type="hidden" name="action" value="edit_tag"/>
+				<input type="hidden" name="tag" value="<?=htmlSC($tag)?>"/>
+				<details>
+					<summary>List Details</summary>
+					<p>List name: <input type="text" name="listname" value="<?=htmlSC($tag)?>" size="25" maxlength="60"/></p>
+					<p><label><input type="checkbox" name="removelist" value="1"/> Delete this list (but keep all associated vocab)</label></p>
+					<input type="submit" name="edit_tag" value="Submit Changes"/>
+				</details>
+			</form>
+		</div>
+		<?
+	}
+	?>
+	<select onchange="document.location='/vocab.php?tag='+this.options[this.selectedIndex].value;">
+		<option value="">Special lists...</option>
+		<option value="">All Vocab</option>
+		<option value="_singlechars" <?=($tag == "_singlechars" ? 'selected="selected"' : '')?>>Single Characters</option>
+		<option value="_recent-1" <?=($tag == "_recent-1" ? 'selected="selected"' : '')?>>Recently Added: 1 day</option>
+		<option value="_recent-3" <?=($tag == "_recent-3" ? 'selected="selected"' : '')?>>Recently Added: 3 days</option>
+		<option value="_recent-7" <?=($tag == "_recent-7" ? 'selected="selected"' : '')?>>Recently Added: 7 days</option>
+		<option value="_recent-14" <?=($tag == "_recent-14" ? 'selected="selected"' : '')?>>Recently Added: 14 days</option>
+		<option value="_recent-30" <?=($tag == "_recent-30" ? 'selected="selected"' : '')?>>Recently Added: 30 days</option>
+	</select>
 </div>
 	
 <fieldset id="listcontrols">
@@ -473,10 +470,10 @@ include __DIR__."/../templates/page_header.php";
 
 <fieldset id="toggcontr">
 	<legend>Toggle</legend>
-	<a href="#" title="toggle chinese characters" class="preventdefault" onclick="$('.vocablist dt').toggleClass('toggle-vis');"><img src="/assets/img/key_h.png" alt="H" border="0" style="vertical-align:top;"/></a> <span class="sw sw-hz sw-on">汉字</span> &nbsp;&nbsp; 
-	<a href="#" title="toggle between traditional and simplified characters" class="preventdefault" onclick="togglefj();"><img src="/assets/img/key_f.png" alt="F" border="0" style="vertical-align:top;"/></a> <span class="fjsw sw sw-fj" title="traditional characters">繁</span> &middot; <span class="fjsw sw sw-fj sw-on" title="simplified characters">简</span> &nbsp;&nbsp; 
-	<a href="#" title="toggle phonetics (pinyin)" class="preventdefault" onclick="$('.vocablist dd.pinyin').toggleClass('toggle-vis');"><img src="/assets/img/key_p.png" alt="P" border="0" style="vertical-align:top;"/></a> <span class="sw sw-py sw-on">拼音</span> &nbsp;&nbsp; 
-	<a href="#" title="toggle definitions" class="preventdefault" onclick="$('.vocablist dd.definitions').toggleClass('toggle-vis');"><img src="/assets/img/key_d.png" alt="D" border="0" style="vertical-align:top;"/></a> <span class="sw sw-df sw-on">Definitions</span>
+	<a href="#" title="toggle chinese characters" accesskey="h" class="preventdefault" onclick="$('.vocablist dt').toggleClass('toggle-vis');"><img src="/assets/img/key_h.png" alt="H" border="0" style="vertical-align:top;"/></a> <span class="sw sw-hz sw-on">汉字</span> &nbsp;&nbsp; 
+	<a href="#" title="toggle between traditional and simplified characters" accesskey="f" class="preventdefault" onclick="togglefj();"><img src="/assets/img/key_f.png" alt="F" border="0" style="vertical-align:top;"/></a> <span class="fjsw sw sw-fj" title="traditional characters">繁</span> &middot; <span class="fjsw sw sw-fj sw-on" title="simplified characters">简</span> &nbsp;&nbsp; 
+	<a href="#" title="toggle phonetics (pinyin)" accesskey="p" class="preventdefault" onclick="$('.vocablist dd.pinyin').toggleClass('toggle-vis');"><img src="/assets/img/key_p.png" alt="P" border="0" style="vertical-align:top;"/></a> <span class="sw sw-py sw-on">拼音</span> &nbsp;&nbsp; 
+	<a href="#" title="toggle definitions" accesskey="d" class="preventdefault" onclick="$('.vocablist dd.definitions').toggleClass('toggle-vis');"><img src="/assets/img/key_d.png" alt="D" border="0" style="vertical-align:top;"/></a> <span class="sw sw-df sw-on">Definitions</span>
 </fieldset>
 
 <?
@@ -487,25 +484,35 @@ if ($num_vocab_items) {
 		if($view == "flashcards") {
 			?>
 			<div class="fcards">
-				<a href="#prev" onclick="fcnav('prev');" class="fcnav fcnav-prev"></a>
-				<a href="#next" onclick="fcnav('next');" class="fcnav fcnav-next"></a>
-				<div class="container">
-					<div class="thelist">
-						<dl class="vocab fcnav-curr">
+				<a href="#prev" onclick="fcnav(-1);return false;" class="fcnav fcnav-prev"></a>
+				<a href="#next" onclick="fcnav(1);return false;" class="fcnav fcnav-next"></a>
+				<div id="fcards-container" class="fcards-container">
+					<div class="fcard">
+						<dl class="vocab">
 							<dd>
-								<b><?=($num_vocab_items)?></b> flash cards in this set.<p></p>
+								<p><b><?=($num_vocab_items)?></b> flash cards in this set.</p>
 								<div style="width:30px; margin:0 auto; background:green url(/assets/img/mark_check.png) no-repeat center center;">&nbsp;</div>
 								I know this one<br/>(decrease frequency of this card)<p></p>
 								<div style="width:30px; margin:0 auto; background:#e10909 url(/assets/img/mark_question.png) no-repeat center center;">&nbsp;</div>
-								I'm not too sure about this one<br/>(increase frequency)<p></p>
-								<a href="#init" class="preventdefault" onclick="fcnav('next')">Begin session</a>
+								I'm not too sure about this one<br/>(increase frequency)
+								<p><a href="#init" class="preventdefault" onclick="fcnav(1)">Begin session</a></p>
 							</dd>
 						</dl>
-						<?
-						foreach($rows as $vocab) {
-							$vocab->renderHTML();
-						}
-						?>
+					</div>
+					<?
+					foreach($rows as $i => $vocab) {
+						echo '<div class="fcard">';
+						$vocab->renderHTML($i + 1, $num_vocab_items);
+						echo '</div>';
+					}
+					?>
+					<div class="fcard">
+						<dl class="vocab">
+							<dd>
+								<p>You've reached the end of the flashcard set.</p>
+								<p><a href="#init" class="preventdefault" onclick="fcnav(0)">Go back to the beginning</a></p>
+							</dd>
+						</dl>
 					</div>
 				</div>
 			</div>

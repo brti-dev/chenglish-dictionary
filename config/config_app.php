@@ -3,9 +3,7 @@
 ini_set("error_reporting", 6135);
 ini_set("session.save_path", __DIR__."/../var/sessions");
 
-use Pced\DB;
 use Pced\User;
-// use Pced\Exception;
 use Monolog\Logger;
 
 define("TEMPLATE_PATH", "templates");
