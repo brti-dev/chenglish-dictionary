@@ -37,7 +37,8 @@ Contributions welcome!
         * ~User class~
         * ~Vocab class~
         * ~Zhongwen class~
+    * Guest user can begin vocab list without registering
     * API
 * Front end
-    * Responsive CSS
+    * ~Responsive CSS~
     * Flashcads swipe for mobile
