@@ -360,7 +360,7 @@ template {
    Configure media queries */
 
 :root {
-  font-size: calc(100vw / 40); }
+  font-size: calc(100vw / 35); }
 
 body {
   margin: 0;
@@ -556,7 +556,7 @@ h2 [lang^="zh"] {
 .hz, [lang^="zh"] {
   font-family:標楷體,Helvetica,Arial,STXihei,Stheiti,SimSun,PMingLiU,SimHei,"Arial Unicode MS","TITUS Cyberbit Basic","Bitstream Cyberbit","Lucida Sans Unicode",Sans-Serif; }
 big.hz, big .hz {
-  font-size: 2em; }
+  font-size: 2rem; }
 .hz a {
   text-decoration: none; }
 
@@ -589,11 +589,14 @@ big.hz, big .hz {
     	background-color: #EEE; }
     .results dfn {
       font-style: normal; }
-    .results td .hz { display:block; min-width:3em; }
+    .searchres-zh {
+      position: relative; 
+      display: block;
+      min-width: 4em; }
     .results .mdbglink {
       display: none;
-      position: absolute;
-      font-size: .2em; }
+      position: absolute; top: 0; right: 0;
+      font-size: .3em; }
     .results tr:hover .mdbglink {
       display: block; }
 

@@ -150,36 +150,44 @@ if (!$query) {
 		} else {
 			?>
 			<table border="1" cellpadding="5" cellspacing="0" class="results" width="100%">
-				<tr>
-					<th colspan="5" style="text-align:right;">
-						To add a term to your vocab lists, click <b>+</b>
-					</th>
-				</tr>
-				<tr>
-					<th><big><dfn title="Simplified Chinese"><span lang="zh-Hans" class="hz">简体</span></dfn></big></th> 
-					<th><big><dfn title="Traditional Chinese"><span lang="zh-Hant" class="hz">繁體</span></dfn></big></th>
-					<th><big><dfn title="Pinyin"><span lang="zh-Hans" class="hz">拼音</span></dfn></big></th>
-					<th><big><dfn title="Definitions"><span lang="zh-Hans" class="hz">定义</span></dfn></big></th>
-					<th style="border-top-color:transparent;"><big style="font-size:200%;"><b>+</b></big></th>
-				</tr>
-				<?
-				foreach ($rows as $row) {
-					$row['definitions'] = preg_replace("@^/|/$@", "", $row['definitions']);
-					$row['definitions'] = str_replace("/", '&nbsp;&nbsp;<span style="color:#AAA;">/</span>&nbsp;&nbsp;', $row['definitions']);
-					?>
+				<caption>
+					To add a term to your vocab lists, click <b>+</b>
+				</caption>
+				<thead>
 					<tr>
-						<td>
-							<big class="hz" lang="zh-Hans"><?=$row['hanzi_jt']?></big> 
-							<a href="http://www.mdbg.net/chindict/chindict.php?wdqb=*<?=$row['hanzi_jt']?>*&wdrst=0" target="_blank" class="mdbglink">MDBG</a>
-						</td>
-						<td><?=($row['hanzi_jt'] != $row['hanzi_ft'] ? '<big class="hz" lang="zh-Hant">'.$row['hanzi_ft'].'</big>' : '&nbsp;')?></td>
-						<td><?=$pz->pzpinyin_tonedisplay_convert_to_mark($row['pinyin'])?></td>
-						<td><?=$row['definitions']?></td>
-						<td nowrap="nowrap"><big><b><a href="vocab.php?add=<?=$row['zid']?>" title="Add to my vocab">+</a></b></big></td>
+						<th nowrap="nowrap"><dfn title="Simplified Chinese"><span lang="zh-Hans" class="hz">简体</span></dfn></th> 
+						<th nowrap="nowrap"><dfn title="Traditional Chinese"><span lang="zh-Hant" class="hz">繁體</span></dfn></th>
+						<th nowrap="nowrap"><dfn title="Pinyin"><span lang="zh-Hans" class="hz">拼音</span></dfn></th>
+						<th nowrap="nowrap"><dfn title="Definitions"><span lang="zh-Hans" class="hz">定义</span></dfn></th>
+						<th style="border-top-color:transparent;"><big><b>+</b></big></th>
 					</tr>
+				</thead>
+				<tbody>
 					<?
-				}
-				?>
+					foreach ($rows as $row) {
+						$row['definitions'] = preg_replace("@^/|/$@", "", $row['definitions']);
+						$row['definitions'] = str_replace("/", '&nbsp;&nbsp;<span style="color:#AAA;">/</span>&nbsp;&nbsp;', $row['definitions']);
+						?>
+						<tr>
+							<td>
+								<span class="searchres-zh">
+									<big class="hz" lang="zh-Hans"><?=$row['hanzi_jt']?></big> 
+									<a href="http://www.mdbg.net/chindict/chindict.php?wdqb=*<?=$row['hanzi_jt']?>*&wdrst=0" target="_blank" class="mdbglink">MDBG</a>
+								</span>
+							</td>
+							<td>
+								<span class="searchres-zh">
+									<?=($row['hanzi_jt'] != $row['hanzi_ft'] ? '<big class="hz" lang="zh-Hant">'.$row['hanzi_ft'].'</big>' : '&nbsp;')?>
+								</span>
+							</td>
+							<td><?=$pz->pzpinyin_tonedisplay_convert_to_mark($row['pinyin'])?></td>
+							<td><?=$row['definitions']?></td>
+							<td nowrap="nowrap"><big><b><a href="vocab.php?add=<?=$row['zid']?>" title="Add to my vocab">+</a></b></big></td>
+						</tr>
+						<?
+					}
+					?>
+				</tbody>
 			</table>
 		<?
 		}
