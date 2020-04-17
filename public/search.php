@@ -29,9 +29,9 @@ if (!$query) {
 } else {
 
 	// Check query for alphanumeric characters as pinyin, or hanzi
-	$pinyin = '';
-	preg_match("/[a-z]/i", $query, $inp_pinyin);
-	if($inp_pinyin) {
+	$pinyin = "";
+	preg_match("/[a-zA-Z]/", $query, $inp_pinyin);
+	if ($inp_pinyin) {
 		//inp pinyin
 		$pinyin = $pz->pzpinyin_tonedisplay_convert_to_number($query);
 	} else {
@@ -113,20 +113,30 @@ if (!$query) {
 
 	// Build query to search dictionary
 	$like = "";
+	$orderby = "";
 	$execute = [];
 	if ($in_defs) {
 		$like.= "definitions LIKE CONCAT('%', :query_definition, '%') OR ";
 		$execute['query_definition'] = $query_definition;
 	}
 	if ($hanzi) {
-		$like.= "hanzi_jt LIKE :query ";
+		$like.= "hanzi_jt LIKE CONCAT('%', :query, '%') ";
 		$execute['query'] = $query;
-	}
-	elseif ($pinyin) {
+		$orderby = "ORDER BY case 
+			WHEN hanzi_jt LIKE :query THEN 0 
+			WHEN hanzi_jt LIKE CONCAT(:query, '%') THEN 1 
+			WHEN hanzi_jt LIKE CONCAT('%', :query, '%') THEN 2
+			ELSE 3 END";
+	} elseif ($pinyin) {
 		$like.= "pinyin LIKE CONCAT('%', :pinyin, '%') ";
 		$execute['pinyin'] = $pinyin;
+		$orderby = "ORDER BY case 
+			WHEN pinyin LIKE :pinyin THEN 0 
+			WHEN pinyin LIKE CONCAT(:pinyin, '%') THEN 1 
+			WHEN pinyin LIKE CONCAT('%', :pinyin, '%') THEN 2
+			ELSE 3 END";
 	}
-	$sql = "SELECT * FROM zhongwen WHERE $like LIMIT 0, 100";
+	$sql = "SELECT * FROM zhongwen WHERE $like $orderby LIMIT 0, 100";
 	$statement = $pdo->prepare($sql);
 	$statement->execute($execute);
 

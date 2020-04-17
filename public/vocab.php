@@ -74,17 +74,6 @@ if($_POST['_action'] == "mark") {
 	
 }
 
-/*if($_POST['_action'] == "change_frequency") {
-	if(!$vid = $_POST['_vocabid']) die("No vocabid given");
-	$q = "SELECT * FROM vocab WHERE vocabid='$vid' and user_id='$_SESSION[user_id]' LIMIT 1";
-	if(!mysqli_num_rows(mysqli_query($db['link'], $q))) {
-		die("Coudn't find that vocab entry");
-	}
-	$q = "UPDATE vocab SET frequency='".mysqli_real_escape_string($db['link'], $_POST['_frequency'])."' WHERE vocabid='".mysqli_real_escape_string($db['link'], $vid)."' LIMIT 1";
-	if(!mysqli_query($db['link'], $q)) die("Couldn't update frequency value");
-	exit;
-}*/
-
 if ($_POST['action'] == "edit_tag") {
 	
 	// EDIT VOCAB LIST //
@@ -115,6 +104,9 @@ if ($_POST['action'] == "edit_tag") {
 	
 }
 
+/**
+ * 
+ */
 if (!isset($_SESSION['logged_in'])) {
 	include __DIR__."/../templates/page_header.php";
 	echo "<h2>My Vocabulary</h2>\n<p>Please register and/or log in to view and modify personal lists.</p>";

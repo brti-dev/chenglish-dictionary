@@ -216,7 +216,8 @@ class Vocab {
         $pinyin = $this->pinyin;
         $pinyin = trim($pinyin);
         $pinyin = $pz->pzpinyin_tonedisplay_convert_to_mark($pinyin);
-        $pinyin = str_replace(" ", '</span><span>', $pinyin)
+        $pinyin = str_replace(" ", "</span><span>", $pinyin);
+        $pinyin = str_replace("5", "", $pinyin);
 
         ?>
         <dl id="vocab-<?=$this->vocab_id?>" class="vocab <?=$this->class?>" data-vocab_id="<?=$this->vocab_id?>">
