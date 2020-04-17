@@ -1,41 +1,46 @@
+const flashcard_length = 100; //in em
+var current_flashcard_i = 0;
+
 var confirm_exit = false;
 window.onbeforeunload = function() {
   if(confirm_exit) return "";
 }
 
 function togglefj(){
-	
 	$(".vocablist dt .hz").toggle();
-	
-	$("#toggcontr .fjsw").toggleClass("fjsw-on");
-	
+	$("#toggcontr .fjsw").toggleClass("sw-on");
 }
 
-function fcnav(dir) {
+/**
+ * Navigate flash cars
+ * @param  {integer} increments A signed integer indicating number of positions to navigate
+ * -1 Navigate one card back (to the left)
+ * 1 Navigate one card forward
+ * 0 Navigate to the beginning
+ */
+function fcnav(increments) {
 	
 	if( $("a.fcnav").hasClass("disable") ) return;
-	$("a.fcnav").addClass("disable").animate({opacity:1}, 700, function(){ $("a.fcnav").removeClass("disable"); });
+	$("a.fcnav").addClass("disable");
 	
-	var cur = $("dl.fcnav-curr");
-	var prv = $("dl.fcnav-curr").prev();
-	if(!$(prv).length) {
-		prv = $(".vocablist .fcards dl:last");
+	var x_position = 0,
+		x_position_str = 0;
+
+	if (increments == 0) {
+		current_flashcard_i = 0;
+	} else {
+		current_flashcard_i += increments;
+		x_position = (increments * flashcard_length * -1);
+		x_position_str = "+="+x_position+"em";
 	}
-	$(prv).css("left", "-740px");
-	var nxt = $("dl.fcnav-curr").next();
-	if(!$(nxt).length) {
-		nxt = $(".vocablist .fcards dl:first");
-	}
-	$(nxt).css("left", "740px");
-	
-	if(dir == "next") {
-		$(cur).animate({left:"-740px"}, 400, function(){ $(this).removeClass("fcnav-curr"); });
-		$(nxt).animate({left:"0px"}, 400).addClass("fcnav-curr");
-	}
-	if(dir == "prev") {
-		$(cur).animate({left:"740px"}, 400, function(){ $(this).removeClass("fcnav-curr"); });
-		$(prv).animate({left:"0px"}, 400).addClass("fcnav-curr");
-	}
+
+	$("#fcards-container").animate({left:x_position_str}, 400, function(){
+		$("a.fcnav").removeClass("disable");
+		// Return if we went too far back or forward
+		if (current_flashcard_i < 0) fcnav(0);
+		if (current_flashcard_i >= $("#fcards-container .fcard").length) fcnav(0);
+		console.log(current_flashcard_i);
+	});
 	
 }
 
@@ -117,11 +122,11 @@ $(document).ready(function(){
 		}
 		if(k == 37) {
 			//left
-			fcnav("prev");
+			fcnav(-1);
 		}
 		if(k == 39) {
 			//right || .> || /?
-			fcnav("next");
+			fcnav(1);
 		}
 		
 	});
@@ -221,7 +226,7 @@ function markVocab(el, act){
 		}
 	);
 	
-	fcnav("next");
+	fcnav(1);
 }
 
 function reposBox(el){

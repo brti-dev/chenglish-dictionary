@@ -198,12 +198,13 @@ class Vocab {
         return true;
     }
 
-    public function renderHTML()
+    public function renderHTML($vocab_i=NULL, $num_vocab=NULL)
     {        
         if (!$this->initialized) {}
 
-        $this->definitions = preg_replace("@^/|/$@", "", $this->definitions);
-        $this->definitions = str_replace("/", ' &nbsp;<span style="color:#AAA;">/</span>&nbsp; ', $this->definitions);
+        $definitions = $this->definitions;
+        $definitions = preg_replace("@^/|/$@", "", $definitions);
+        $definitions = str_replace("/", '</b> / <b>', $definitions);
         
         if (isset($this->vocab_id) && $tags = $this->getTags()) {
             $tags = array_map(function($tag) {
@@ -212,22 +213,36 @@ class Vocab {
         }
 
         $pz = new PrimezeroTools;
-        $this->pinyin = trim($this->pinyin);
-        $this->pinyin = $pz->pzpinyin_tonedisplay_convert_to_mark($this->pinyin);
+        $pinyin = $this->pinyin;
+        $pinyin = trim($pinyin);
+        $pinyin = $pz->pzpinyin_tonedisplay_convert_to_mark($pinyin);
+        $pinyin = str_replace(" ", '</span><span>', $pinyin)
 
         ?>
         <dl id="vocab-<?=$this->vocab_id?>" class="vocab <?=$this->class?>" data-vocab_id="<?=$this->vocab_id?>">
             <dt>
-                <div class="num"><?=$vcount?> of <?=$rownum?></div>
+                <div class="num"><?=$vocab_i?> of <?=$num_vocab?></div>
                 <big class="hz hz-jt" lang="zh-Hans"><?=$this->hanzi_jt?></big>
                 <big class="hz hz-ft" lang="zh-Hant"><?=$this->hanzi_ft?></big>
             </dt>
-            <dd class="pinyin"><span><?=str_replace(" ", '</span><span>', $this->pinyin)?></span></dd>
-            <dd class="definitions"><?=$this->definitions?></dd>
+            <dd class="pinyin"><span><?=$pinyin?></span></dd>
+            <dd class="definitions"><b><?=$definitions?></b></dd>
             <?
             //compounds
             if (isset($this->user_id)) {
-                $sql = "SELECT hanzi_jt, pinyin, definitions FROM zhongwen WHERE hanzi_jt LIKE '%".$this->hanzi_jt."%' AND hanzi_jt != '".$this->hanzi_jt."'";
+                $sql = sprintf(
+                    "SELECT * FROM vocab 
+                    LEFT JOIN zhongwen USING (zid) 
+                    WHERE
+                        user_id=%d AND 
+                        (hanzi_jt LIKE '%%%s%%' AND 
+                        hanzi_jt != '%s') 
+                    LIMIT 0, 100;", 
+                    $this->user_id,
+                    $this->hanzi_jt, 
+                    $this->hanzi_jt
+                );
+                // $sql = "SELECT hanzi_jt, pinyin, definitions FROM zhongwen WHERE hanzi_jt LIKE '%".$this->hanzi_jt."%' AND hanzi_jt != '".$this->hanzi_jt."'";
                 $statement = $this->pdo->query($sql);
                 if ($rows = $statement->fetchAll(\PDO::FETCH_CLASS, "Pced\\Zhongwen")) {
                     echo '<dd class="compounds hz">';
@@ -246,19 +261,25 @@ class Vocab {
             }
             
             //controls
-            if (isset($this->vocab_id)) {
-                ?>
-                <dd class="extras">
-                    <ul class="controls">
+            ?>
+            <dd class="extras">
+                <ul class="controls">
+                    <?
+                    if (isset($this->vocab_id)) {
+                        ?>
                         <li class="mark known" rel="check"><a href="#check" title="mark this entry as known and show it less frequently" onclick="markVocab(this,'check');return false;">&#10004;</a></li>
                         <li class="mark unknown" rel="question"><a href="#question" title="mark this entry as unknown and show it more frequently" onclick="markVocab(this,'question');return false;">?</a></li>
                         <li><a href="#edit" title="edit this entry" class="editvocab" rel="<?=$this->vocab_id?>" onclick="editVocab(<?=$this->vocab_id?>);return false;">edit</a></li>
-                        <li class="exlink mdbg"><a href="http://www.mdbg.net/chindict/chindict.php?wdqb=*<?=$this->hanzi_jt?>*&wdrst=0" target="_blank" title="search for this on MDGB Chinese-English Dictionary">MDBG</a></li>
-                    </ul>
-                </dd>
-                <?
-            }
-            ?>
+                        <?
+                    } elseif ($this->zid) {
+                        ?>
+                        <li><a href="vocab.php?add=<?=$this->zid?>"><b>+</b> Add Vocab</a></li>
+                        <?
+                    }
+                    ?>
+                    <li class="exlink mdbg"><a href="http://www.mdbg.net/chindict/chindict.php?wdqb=*<?=$this->hanzi_jt?>*&wdrst=0" target="_blank" title="search for this on MDGB Chinese-English Dictionary">MDBG</a></li>
+                </ul>
+            </dd>
         </dl>
         <?php
     }

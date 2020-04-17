@@ -416,9 +416,6 @@ body, th, td {
     #login form {
       margin-top: 0.5em; }
 
-@media (max-width: 640px) {
-
-}
 @media (min-width: 640px) {
   #login {
     position: absolute;
@@ -486,7 +483,8 @@ input[type=text], input[type=password], input[type=email], textarea, select {
 input:focus {
 	border-color: #444; }
 input[type=text], input[type=password], input[type=email] {
-	font-family: Arial; }
+	font-family: Arial;
+  width: 10em; }
 .inpfw {
 	margin-right: .5em; }
 .inpfw input[type=text], .inpfw input[type=password], .inpfw textarea, .inpfw select {
@@ -561,51 +559,21 @@ big.hz, big .hz {
   text-decoration: none; }
 
 #searchres {}
-  #dictres {}
-    #dictres h3 {
+  #searchres header {}
+    #searchres header h3 {
       margin-bottom: 0; }
-    #dictres h3 + div {
+    #searchres header nav span {
       margin: 3px 0 1em 1em; }
-    #dictres h3 + div > span::before {
+    #searchres header nav span::before {
       content: url(/assets/img/arrow-down-right.png); }
-    table.results {
-    	border-width: 0 0 1px 1px;
-    	border-style: solid;
-    	border-color: #CCC; }
-    table.results tr:hover td {
-    	background-color: #FFFFB7; }
-    table.results th, 
-    table.results td {
-    	padding: .5em;
-    	border-width: 1px 1px 0 0;
-    	border-style: solid;
-    	border-color: #CCC;
-    	background-color: white; }
-    table.results th {
-    	font-weight: normal;
-    	color: #666;
-    	text-align: left;
-    	white-space: nowrap;
-    	background-color: #EEE; }
-    .results dfn {
-      font-style: normal; }
-    .searchres-zh {
-      position: relative; 
-      display: block;
-      min-width: 4em; }
-    .results .mdbglink {
-      display: none;
-      position: absolute; top: 0; right: 0;
-      font-size: .3em; }
-    .results tr:hover .mdbglink {
-      display: block; }
 
 .fjsw {
 	padding: 0 2px;
 }
+#toggcontr .sw:not(.sw-on) {
+  text-decoration: line-through; }
 #toggcontr .sw-on {
-	background-color: #FFFF9F;
-}
+	background-color: #FFFF9F; }
 
 .vocab-container {}
   .vocab-container fieldset {
@@ -621,80 +589,85 @@ big.hz, big .hz {
   .listdetails {
     margin-right: 1em; }
 
-.vocablist {
-  overflow: hidden; }
-  .vocablist dl {
+.vocablist {}
+  dl.vocab {
   	margin: 10px 0 0;
   	padding: 5px 0 20px; }
-    .vocablist dl dt { margin:0; padding:0; }
-    .vocablist dt .num {
+    .vocab dt { margin:0; padding:0; }
+    .vocab dt .num {
     	display: none; }
-    .vocablist big.hz {
-    	font-size: 55px; }
-    .vocablist .hz-ft {
+    .vocab big.hz {
+    	font-size: 5em; }
+    .vocab .hz-ft {
     	display: none; }
-    .vocablist dd {
+    .vocab dd {
     	margin: .5em 0 0; padding:0;
     	clear: both; }
-      .vocablist dd.pinyin {
+      .vocab dd.pinyin {
       	margin-left: 0;
-        display: block; }
-        .vocablist dd.pinyin span {
+        display: flex;
+        color: hsl(0, 0%, 50%); }
+        .vocab dd.pinyin span {
           display: block;
           float: left;
-        	width: 55px;
+        	width: 5em;
         	white-space: nowrap;
         	text-align: center; }
-        .vocablist dd.definitions, 
-        .vocablist dd.compounds {
-        	font-family:Helvetica,Arial,STXihei,Stheiti,SimSun,PMingLiU,SimHei; }
-      .vocablist .error .hz, 
-      .vocablist .error .definitions {
+        .vocab dd.definitions, 
+        .vocab dd.compounds {
+        	font-family: Helvetica,Arial,STXihei,Stheiti,SimSun,PMingLiU,SimHei;
+          color: hsl(0,0%,80%); }
+          .vocab dd.definitions b { color:black; font-weight:normal; }
+      .vocab.error .hz {
         color: red; }
-      .vocablist dd:after { 
-       content: "."; 
-       visibility: hidden; 
-       display: block; 
-       height: 0; 
-       clear: both; }
 
-    .vocablist .extras {}
-    .vocablist .extras ul {
-      margin:0; padding:0;
-      list-style:none;
-      display: flex; }
-    .vocablist .extras ul + ul { margin:0.8em 0 0; }
-    .vocablist .fcards .extras ul + ul { margin:2em 0 0; }
-      .vocablist .extras ul li { }
-        .vocablist .extras ul li a {
-        	display: block;
-        	margin: 0 0.5em 0 0;
-        	padding: 3px 8px;
-        	font-size: 0.9em; font-family: Arial; 
-          line-height: 1em;
-          color: #03c;
-        	border: 1px solid #CCC; border-radius:2px; }
-        .vocablist .extras ul li a:hover { background-color:#CCC; }
+    .vocab .extras {}
+      .vocab .extras ul {
+        margin:0; padding:0;
+        list-style:none;
+        display: flex;
+        flex-wrap: wrap; }
+      .vocab .extras ul + ul { margin:0.8em 0 0; }
+      .vocab .fcards .extras ul + ul { margin:2em 0 0; }
+        .vocab .extras ul li { }
+          .vocab .extras ul li a {
+          	display: block;
+            white-space: nowrap;
+          	margin: 0 0.5em 0 0;
+          	padding: 3px 8px;
+          	font-size: 0.9em; font-family: Arial;
+            text-decoration: none;
+            line-height: 1em;
+            color: #03c;
+          	border: 1px solid #ccc; border-radius:2px; }
+          .vocab .extras ul li a:hover { background-color:#ddd; }
+      .add-vocab .vocab .extras { display:none; }
 
-    .vocablist .fcards li.mark { position:absolute; top:8px; right:0; }
-    .vocablist .fcards li.known { right:40px; }
-    .vocablist .extras li.mark a {
+    .vocab .fcards li.mark { position:absolute; top:8px; right:0; }
+    .vocab .fcards li.known { right:40px; }
+    .vocab .extras li.mark a {
       width: 2.8em;
       text-decoration: none; 
       color: white; 
       font-weight: bold; 
       text-align:center; 
       background:url(/assets/img/gradient_green_sm.png) repeat-x 0 0; }
-    .vocablist .extras li.mark a:hover { background-position:0 -38px; }
-    .vocablist .extras li.unknown a { background-image:url(/assets/img/gradient_red_sm.png); }
-    .vocablist .extras li.marked a { background-image:none !important; background-color:#CCC; }
+    .vocab .extras li.mark a:hover { background-position:0 -38px; }
+    .vocab .extras li.unknown a { background-image:url(/assets/img/gradient_red_sm.png); }
+    .vocab .extras li.marked a { background-image:none !important; background-color:#CCC; }
 
-    .vocablist dl dt.toggle-vis .hz, .vocablist dl dd.toggle-vis {
+    .vocab dt.toggle-vis .hz, .vocablist dl dd.toggle-vis {
     	visibility: hidden; }
 
     .vocablist .fcards {
     	position: relative;
-    	margin: 0; }
+    	margin: 0;
+      overflow: hidden; }
+    @media (min-width: 640px) {
+      .vocablist .fcards {
+        width:29em;
+        margin: 0 auto; }
+    }
       .fcnav {
       	position: absolute;
       	top: 10em;
@@ -714,10 +687,12 @@ big.hz, big .hz {
         align-items: flex-start;
         flex-wrap: nowrap; }
       .fcard {
-        width: 30em;
-        min-width: 30em;
-        margin: 0 60em 0 0; }
+        width: 29em;
+        min-width: 29em;
+        box-sizing: border-box;
+        margin: 0 71em 0 0; }
       .fcards dl {
+        position: relative;
       	padding: 4em;
       	text-align: center;
       	border-width: 1px 2px 2px 1px;
@@ -732,37 +707,29 @@ big.hz, big .hz {
       	color: #777; }
       .vocablist .fcards big.hz {
       	font-family: Helvetica,Arial,"標楷體",STXihei,Stheiti,SimSun,PMingLiU,SimHei,"Arial Unicode MS","TITUS Cyberbit Basic","Bitstream Cyberbit","Lucida Sans Unicode",Sans-Serif;
-      	font-size: 9em; }
+      	font-size: 5em; }
+      .vocablist .fcards .pinyin {
+        justify-content: center; }
       .vocablist .fcards .ftz {
       	display: block;
-      	margin: 0;
-      }
+      	margin: 0; }
       .vocablist .fcards .ftz .paren {
       	display: none;
       }
-      .vocablist .fcards .pinyin table {
-      	margin: 0 auto;
-      }
-      .vocablist .fcards .pinyin td {
-      	width: 116px;
-      	font-size: 15px;
-      }
       .vocablist .fcards .definitions {
-      	margin: 15px 0 0;
-      	padding: 15px 0 0;
-      	border-top: 1px solid #ddD;
+      	margin: 1em 0 0;
+      	padding: 1em 0 0;
+      	border-top: 1px solid #ddd;
       	background-image: none;
-      	text-align: left;
-      }
+      	text-align: left; }
       .vocablist .fcards .compounds {
-      	margin:15px -10px 0; padding:4px 10px;
-      	background-image:none; background-color:#EEE;
+      	margin: 1em 0 0; padding:3px 8px;
+      	background-color:#EEE;
       	text-align:left; color:#999;
-      }
+        border-radius: 2px; }
       .vocablist .fcards .extras {
-      	margin: 15px 0 0;
-      	border-width: 1px 0 0;
-      }
+      	margin: 1em 0 0;
+      	border-width: 1px 0 0; }
       .vocablist .fcards .extras ul {}
       .vocablist .fcards .extras ul li {}
       .vocablist .fcards .extras ul li a {}

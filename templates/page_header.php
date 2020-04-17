@@ -90,7 +90,7 @@ $rand = rand(1,5); //generate random # for header img
 					$statement->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
 					$statement->execute();
 					while (($row = $statement->fetch(PDO::FETCH_ASSOC)) !== false) {
-						echo '<option value="'.$row['tag'].'" class="hz">'.$row['tag'].'</option>';
+						echo '<option value="'.$row['tag'].'">'.$row['tag'].'</option>';
 					}
 					?>
 				</select>
