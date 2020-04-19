@@ -50,7 +50,7 @@ if (isset($_SESSION['logged_in'])) {
 
     // If the user is a registred guest, flash the option to save their session
     if ($current_user->getRank() == User::GUEST) {
-        $flash[] = "As a guest, your vocabulary lists won't be saved after you exit and the cookies expire. <a href=\"/login.php?register_guest=true\">Register and save your progress permanently</a>";
+        $flash[] = "As a guest, your vocabulary lists may not be saved after you exit. <a href=\"/login.php?register_guest=true\">Register and save your progress permanently</a>";
     }
 }
 

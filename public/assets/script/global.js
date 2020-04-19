@@ -9,6 +9,7 @@ window.onbeforeunload = function() {
 function togglefj(){
 	$(".vocablist dt .hz").toggle();
 	$("#toggcontr .fjsw").toggleClass("sw-on");
+	console.log("Toggle Hanzi style");
 }
 
 /**

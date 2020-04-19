@@ -226,10 +226,8 @@ if (isset($_GET['register_guest'])) {
 if(isset($_GET['do']) && $_GET['do'] == "logout") {
 	unset($_SESSION['user_id']);
 	unset($_SESSION['logged_in']);
-
-	$ref = $_SERVER['HTTP_REFERER'];
-	if (strstr($ref, "login.php")) $ref = "/";
-	header("Status: 303");
-	header("Location: ".$ref);
-	exit();
+	
+	header("HTTP/1.1 302 Redirect");
+	header("Location: /");
+	exit;
 }

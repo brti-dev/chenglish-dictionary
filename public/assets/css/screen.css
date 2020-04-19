@@ -360,11 +360,11 @@ template {
    Configure media queries */
 
 :root {
-  font-size: calc(100vw / 35); }
+  font-size: calc(100vw / 25); }
 
 body {
   margin: 0;
-  padding: 3em;
+  padding: 1em;
   font-family: sans-serif;
 	background-color: white;
 	background-repeat: no-repeat;
@@ -417,11 +417,14 @@ body, th, td {
       margin-top: 0.5em; }
 
 @media (min-width: 640px) {
+  :root {
+    font-size: calc(100vw / 35); }
+  body {
+    padding: 3em; }
   #login {
     position: absolute;
     top: 0;
-    left: 13em;
-    left: 235px; }
+    right: 0; }
   nav {
     justify-content: flex-start; }
 }
@@ -549,7 +552,7 @@ h2 {
   font-size: 2.5rem;
 	padding: 0.1em 0.25em; }
 h2 [lang^="zh"] {
-  font-size:4rem; }
+  font-size:3.5rem; }
 
 .hz, [lang^="zh"] {
   font-family:標楷體,Helvetica,Arial,STXihei,Stheiti,SimSun,PMingLiU,SimHei,"Arial Unicode MS","TITUS Cyberbit Basic","Bitstream Cyberbit","Lucida Sans Unicode",Sans-Serif; }
@@ -557,6 +560,16 @@ big.hz, big .hz {
   font-size: 2rem; }
 .hz a {
   text-decoration: none; }
+
+#notify {
+  margin-bottom: 1em; }
+  #notify > ul {
+    list-style: none;
+    margin: 0; padding: 0; }
+    #notify > ul > li {
+      margin: 1em 0 0;
+      padding: 1em;
+      background-color: #ffffb3; }
 
 #searchres {}
   #searchres header {}
@@ -597,7 +610,7 @@ big.hz, big .hz {
     .vocab dt .num {
     	display: none; }
     .vocab big.hz {
-    	font-size: 5em; }
+    	font-size: 4.5em; }
     .vocab .hz-ft {
     	display: none; }
     .vocab dd {
@@ -610,7 +623,7 @@ big.hz, big .hz {
         .vocab dd.pinyin span {
           display: block;
           float: left;
-        	width: 5em;
+        	width: 4.5em;
         	white-space: nowrap;
         	text-align: center; }
         .vocab dd.definitions, 
@@ -639,8 +652,9 @@ big.hz, big .hz {
             text-decoration: none;
             line-height: 1em;
             color: #03c;
-          	border: 1px solid #ccc; border-radius:2px; }
-          .vocab .extras ul li a:hover { background-color:#ddd; }
+          	border: 1px solid hsl(0 0% 70%); border-radius:2px; }
+          .vocab .extras ul li a:hover { 
+            background-color: hsl(0 0% 95%); }
       .add-vocab .vocab .extras { display:none; }
 
     .vocab .fcards li.mark { position:absolute; top:8px; right:0; }
@@ -648,7 +662,7 @@ big.hz, big .hz {
     .vocab .extras li.mark a {
       width: 2.8em;
       text-decoration: none; 
-      color: white; 
+      color: white !important;
       font-weight: bold; 
       text-align:center; 
       background:url(/assets/img/gradient_green_sm.png) repeat-x 0 0; }
@@ -661,13 +675,13 @@ big.hz, big .hz {
 
     .vocablist .fcards {
     	position: relative;
-    	margin: 0;
+    	margin: 0 -1em;
       overflow: hidden; }
-    @media (min-width: 640px) {
-      .vocablist .fcards {
-        width:29em;
-        margin: 0 auto; }
-    }
+      @media (min-width: 640px) {
+        .vocablist .fcards {
+          width: 25em;
+          margin: 0 auto; }
+      }
       .fcnav {
       	position: absolute;
       	top: 10em;
@@ -687,13 +701,13 @@ big.hz, big .hz {
         align-items: flex-start;
         flex-wrap: nowrap; }
       .fcard {
-        width: 29em;
-        min-width: 29em;
+        width: 25em;
+        min-width: 25em;
         box-sizing: border-box;
-        margin: 0 71em 0 0; }
+        margin: 0 75em 0 0; }
       .fcards dl {
         position: relative;
-      	padding: 4em;
+      	padding: 3em;
       	text-align: center;
       	border-width: 1px 2px 2px 1px;
       	border-style: solid;

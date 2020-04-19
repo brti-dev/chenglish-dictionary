@@ -1,12 +1,12 @@
 <?php
 
-$page_title = $page_title ? strip_tags($page_title) : "PCE Dictionary";
+$page_title = $page_title ? strip_tags($page_title) : APP_NAME;
 
 ?><!DOCTYPE html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
 		<title><?=$page_title?></title>
 		<link rel="shortcut icon" href="/favicon.ico">
 		<link rel="stylesheet" type="text/css" href="/assets/css/screen.css">
@@ -98,7 +98,7 @@ $page_title = $page_title ? strip_tags($page_title) : "PCE Dictionary";
 			//outp errors, warnings & results
 			if (!empty($flash)) {
 				?>
-				<div id="notify">
+				<section id="notify">
 					<ul>
 						<?
 						foreach ($flash as $message) {
@@ -106,6 +106,6 @@ $page_title = $page_title ? strip_tags($page_title) : "PCE Dictionary";
 						}
 						?>
 					</ul>
-				</div>
+				</section>
 				<?
 			}
