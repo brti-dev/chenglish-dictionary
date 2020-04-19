@@ -105,7 +105,7 @@ if (isset($_POST['submit_login'])) {
 
 // User wanna register
 
-if(isset($_POST['submit_registration'])) {
+if (isset($_POST['submit_registration'])) {
 	
 	try {
 		[$email, $password, $password_hash] = validateUserInput();
@@ -155,14 +155,26 @@ if(isset($_POST['submit_registration'])) {
         $vocab = new Vocab($insert_params, $pdo, $logger);
         $vocab->insert();
     }
+
+    header("HTTP/1.1 302 Redirect");
+	header("Location: /login.php?registrationsuccess=true");
+}
+
+if (isset($_GET['registrationsuccess'])) {
 	
 	$page_title = APP_NAME .  " / Register";
 	include __DIR__."/../templates/page_header.php";
 	?>
 	<h2>Successful Registration</h2>
-	<p>太好了！ You have been successfully registered and your first vocab lists have been created: <a href="/vocab.php?tag=General+Vocab">General Vocab</a> and <a href="/vocab.php?tag=Measure+Words">Measure Words</a>. To add to these lists, or to create a new list, search for something in the search field above.</p>
+	<p>太好了！ You have been successfully registered. We've also created two starter vocab lists for you:</p>
+	<ul>
+		<li><a href="/vocab.php?tag=General+Vocab">General Vocab</a></li>
+		<li><a href="/vocab.php?tag=Measure+Words">Measure Words</a></li>
+	</ul>
+	<p>To add to these lists, or to create a new list, search for something in the search field above.</p>
 	<?
 	include __DIR__."/../templates/page_footer.php";
+	exit;
 	
 }
 
