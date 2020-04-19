@@ -1,4 +1,4 @@
-# PCE Dictionary
+# Chenglish Dictionary
 
 An app for Chinese language learners. Includes a massive Chinese-English dictionary powered by [CC-CEDICT](http://cc-cedict.org/) with the additional function of creating, saving, producing, and managing highly functional vocabulary lists for personal use and study.</b>
 
@@ -37,7 +37,7 @@ Contributions welcome!
         * ~User class~
         * ~Vocab class~
         * ~Zhongwen class~
-    * Guest user can begin vocab list without registering
+    * ~Guest user can begin vocab list without registering~
     * API
 * Front end
     * ~Responsive CSS~
