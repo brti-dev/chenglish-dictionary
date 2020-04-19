@@ -111,18 +111,26 @@ if (isset($_POST['submit_registration'])) {
 		[$email, $password, $password_hash] = validateUserInput();
 
 		// Password already hashed and sent via post
-		$password_hash = filter_input(INPUT_POST, "password_hash");
-		if (!$password_hash) {
-			throw new Exception("Password couldn't be secured because of an error.");
+		if (isset($_POST['password_hash'])) {
+			$password_hash = filter_input(INPUT_POST, "password_hash");
+			if (!$password_hash) {
+				throw new Exception("Password couldn't be secured because of an error.");
+			}
 		}
 
-		$user_params = [
+		$user_data = [
 			"email" => $email,
 			"password" => $password_hash,
+			"rank" => User::MEMBER,
 		];
-		
-		$user = new User($user_params, $GLOBALS['pdo'], $logger);
-		$user->insert();
+
+		if ($_SESSION['logged_in'] && $current_user->getRank() == User::GUEST) {
+			$current_user->data = array_merge($current_user->data, $user_data);
+			$current_user->save();
+		} else {
+			$current_user = new User($user_data, $GLOBALS['pdo'], $logger);
+			$current_user->insert();
+		}
 	} catch (Exception $e) {
 		$logger->error($e);
 		
@@ -150,7 +158,7 @@ if (isset($_POST['submit_registration'])) {
         $insert_params = [
             "zid" => $zid, 
             "tags" => [$tag], 
-            "user_id" => $user->getId(),
+            "user_id" => $current_user->getId(),
         ];
         $vocab = new Vocab($insert_params, $pdo, $logger);
         $vocab->insert();
@@ -176,6 +184,42 @@ if (isset($_GET['registrationsuccess'])) {
 	include __DIR__."/../templates/page_footer.php";
 	exit;
 	
+}
+
+if (isset($_GET['register_guest'])) {
+	if (isset($_SESSION['logged_in']) && $current_user->getRank() == User::GUEST) {
+		include __DIR__."/../templates/page_header.php";
+		?>
+		<h2>Register Account</h2>
+		<form action="/login.php" method="post">
+			<input type="email" name="email" placeholder="E-mail" required>
+		    <input type="password" name="password" placeholder="Password" required>
+			<input type="submit" name="submit_login" value="Submit"/>
+		</form>
+		<?
+		include __DIR__."/../templates/page_footer.php";
+	} elseif (!$_SESSION['logged_in']) {
+		try {
+			User::registerGuest($pdo, $logger);
+
+			$location = $_SERVER['HTTP_REFERER'] ? $_SERVER['HTTP_REFERER'] : "/search.php?in_defs=1&query=你好";
+
+			header("HTTP/1.1 302 Redirect");
+			header("Location: " . $location);
+			exit;
+		} catch (Exception $e) {
+			$logger->error($e);
+			include __DIR__."/../templates/page_header.php";
+			?>
+			<h2>Error</h2>
+			<p>There was an error registering you as a guest.</p>
+			<?
+			include __DIR__."/../templates/page_footer.php";
+			exit;
+		}
+	} else {
+		die("You may have arrived here by mistake. <a href=\"/\">Home Page</a> | <a href=\"/login.php?do=logout\">Log Out</a>");
+	}
 }
 
 //logout

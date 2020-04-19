@@ -87,6 +87,11 @@ class User {
         return $this->user_id;
     }
 
+    public function getRank(): int
+    {
+        return $this->rank;
+    }
+
     /**
      * Gets all supported ranks.
      *
@@ -116,7 +121,7 @@ class User {
     }
 
     /**
-     * Update the current user in the database
+     * Update the user in the database using $this->data parameters
      * @return Boolean    
      */
     public function save(): bool
@@ -124,10 +129,11 @@ class User {
         if (!$this->user_id)
             throw new Exception("Couldn't save User: The user id hasn't been set.");
 
-        $sql = "UPDATE `users` SET `email`=:email,`password`=:password,`last_login`=:last_login,`last_login_2`=:last_login_2 WHERE `user_id`=:user_id";
+        $sql = "UPDATE `users` SET `email`=:email,`password`=:password,`rank`=:rank,`last_login`=:last_login,`last_login_2`=:last_login_2 WHERE `user_id`=:user_id";
         $statement = $this->pdo->prepare($sql);
         $statement->bindValue(':email', $this->data['email']);
         $statement->bindValue(':password', $this->data['password']);
+        $statement->bindValue(':rank', $this->data['rank']);
         $statement->bindValue(':last_login', $this->data['last_login']);
         $statement->bindValue(':last_login_2', $this->data['last_login_2']);
         $statement->bindValue(':user_id', $this->user_id);
@@ -172,5 +178,19 @@ class User {
         if ($this->logger) $this->logger->info("DELETE user user_id:".$this->user_id, $this->data);
 
         return true;
+    }
+
+    public function registerGuest($pdo, $logger=[]): User
+    {
+        $user_params = [
+            "email" => "temp-".uniqid()."@".APP_DOMAIN,
+            "password" => "password",
+        ];
+        $user = new self($user_params, $pdo, $logger);
+        $user->insert();
+
+        if (!empty($logger)) $logger->info("Guest registration", $user->data);
+
+        return $user;
     }
 }

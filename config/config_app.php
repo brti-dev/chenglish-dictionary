@@ -7,7 +7,8 @@ use Pced\User;
 use Monolog\Logger;
 
 define("TEMPLATE_PATH", "templates");
-define("APP_NAME", "PCE Dictionary");
+define("APP_NAME", "Chenglish Dict");
+define("APP_DOMAIN", "chenglishdict.com");
 define("ENVIRONMENT", "development");
 define("DEFAULT_EMAIL", "mat.berti@gmail.com");
 
@@ -44,7 +45,13 @@ if (isset($_SESSION['logged_in'])) {
         return $record;
     });
     $logger->debug("User session found");
+
     $current_user = User::getById($_SESSION['user_id'], $pdo, $logger);
+
+    // If the user is a registred guest, flash the option to save their session
+    if ($current_user->getRank() == User::GUEST) {
+        $flash[] = "As a guest, your vocabulary lists won't be saved after you exit and the cookies expire. <a href=\"/login.php?register_guest=true\">Register and save your progress permanently</a>";
+    }
 }
 
 function htmlSC($x) {

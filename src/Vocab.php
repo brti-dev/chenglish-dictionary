@@ -274,7 +274,7 @@ class Vocab {
                         <?
                     } elseif ($this->zid) {
                         ?>
-                        <li><a href="vocab.php?add=<?=$this->zid?>"><b>+</b> Add Vocab</a></li>
+                        <li><a href="vocab.php?add=<?=$this->zid?>"><b class="plus">+</b> Add Vocab</a></li>
                         <?
                     }
                     ?>

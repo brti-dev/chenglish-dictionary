@@ -5,6 +5,7 @@ require '../vendor/autoload.php';
 use Pced\PrimezeroTools;
 use Pced\Vocab;
 use Pced\Zhongwen;
+use Pced\User;
 
 require_once (__DIR__."/../config/config_app.php");
 
@@ -105,11 +106,23 @@ if ($_POST['action'] == "edit_tag") {
 }
 
 /**
- * 
+ * The following functions require a user object. Ask unknown users 
+ * to register or proceed as guest
  */
 if (!isset($_SESSION['logged_in'])) {
+	// parse_str($_SERVER['QUERY_STRING'], $querystring);
+	// $querystring['register_guest'] = "true";
+	// $guest_url = $_SERVER['PHP_SELF'] . "?" . http_build_query($querystring);
+	$guest_url = "/login.php?register_guest=true";
+
 	include __DIR__."/../templates/page_header.php";
-	echo "<h2>My Vocabulary</h2>\n<p>Please register and/or log in to view and modify personal lists.</p>";
+
+	?>
+	<h2>My Vocabulary</h2>
+	<p>In order to view and modify personal lists, please register or login using the form at the top of the page.</p>
+	<p>You can also <a href="<?=$guest_url?>"><strong>continue as a guest</strong></a>.</p>
+	<?
+
 	include __DIR__."/../templates/page_footer.php";
 	exit;
 }
@@ -463,7 +476,7 @@ include __DIR__."/../templates/page_header.php";
 <fieldset id="toggcontr">
 	<legend>Toggle</legend>
 	<a href="#" title="toggle chinese characters" accesskey="h" class="preventdefault" onclick="$('.vocablist dt').toggleClass('toggle-vis');"><img src="/assets/img/key_h.png" alt="H" border="0" style="vertical-align:top;"/></a> <span class="sw sw-hz sw-on">汉字</span> &nbsp;&nbsp; 
-	<a href="#" title="toggle between traditional and simplified characters" accesskey="f" class="preventdefault" onclick="togglefj();"><img src="/assets/img/key_f.png" alt="F" border="0" style="vertical-align:top;"/></a> <span class="fjsw sw sw-fj" title="traditional characters">繁</span> &middot; <span class="fjsw sw sw-fj sw-on" title="simplified characters">简</span> &nbsp;&nbsp; 
+	<a href="#" title="toggle between traditional and simplified characters" accesskey="f" class="preventdefault" onclick="togglefj(); return false;"><img src="/assets/img/key_f.png" alt="F" border="0" style="vertical-align:top;"/></a> <span class="fjsw sw sw-fj" title="traditional characters">繁</span> &middot; <span class="fjsw sw sw-fj sw-on" title="simplified characters">简</span> &nbsp;&nbsp; 
 	<a href="#" title="toggle phonetics (pinyin)" accesskey="p" class="preventdefault" onclick="$('.vocablist dd.pinyin').toggleClass('toggle-vis');"><img src="/assets/img/key_p.png" alt="P" border="0" style="vertical-align:top;"/></a> <span class="sw sw-py sw-on">拼音</span> &nbsp;&nbsp; 
 	<a href="#" title="toggle definitions" accesskey="d" class="preventdefault" onclick="$('.vocablist dd.definitions').toggleClass('toggle-vis');"><img src="/assets/img/key_d.png" alt="D" border="0" style="vertical-align:top;"/></a> <span class="sw sw-df sw-on">Definitions</span>
 </fieldset>
