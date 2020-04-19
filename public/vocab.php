@@ -414,128 +414,158 @@ include __DIR__."/../templates/page_header.php";
 ?>
 <h2><?=$page_heading?></h2>
 
-<div class="vocab-container">
+<section class="vocab-container">
+	<nav>
+		<div id="vocablistsel">
+			<?
+			if($tag && !$slist) {
+				?>
+				<div class="listdetails">
+					<form action="vocab.php" method="post">
+						<input type="hidden" name="action" value="edit_tag"/>
+						<input type="hidden" name="tag" value="<?=htmlSC($tag)?>"/>
+						<details>
+							<summary>List Details</summary>
+							<p>List name: <input type="text" name="listname" value="<?=htmlSC($tag)?>" size="25" maxlength="60"/></p>
+							<p><label><input type="checkbox" name="removelist" value="1"/> Delete this list (but keep all associated vocab)</label></p>
+							<input type="submit" name="edit_tag" value="Submit Changes"/>
+						</details>
+					</form>
+				</div>
+				<?
+			}
+			?>
+			<select onchange="document.location='/vocab.php?tag='+this.options[this.selectedIndex].value;">
+				<option value="">Special lists...</option>
+				<option value="">All Vocab</option>
+				<option value="_singlechars" <?=($tag == "_singlechars" ? 'selected="selected"' : '')?>>Single Characters</option>
+				<option value="_recent-1" <?=($tag == "_recent-1" ? 'selected="selected"' : '')?>>Recently Added: 1 day</option>
+				<option value="_recent-3" <?=($tag == "_recent-3" ? 'selected="selected"' : '')?>>Recently Added: 3 days</option>
+				<option value="_recent-7" <?=($tag == "_recent-7" ? 'selected="selected"' : '')?>>Recently Added: 7 days</option>
+				<option value="_recent-14" <?=($tag == "_recent-14" ? 'selected="selected"' : '')?>>Recently Added: 14 days</option>
+				<option value="_recent-30" <?=($tag == "_recent-30" ? 'selected="selected"' : '')?>>Recently Added: 30 days</option>
+			</select>
+		</div>
+	
+		<fieldset id="listcontrols">
+			<?
+			$s = $num_vocab_items != 1 ? "s" : "";
+			echo ($tag ? "<b>$num_vocab_items</b> vocab item$s in this list" : "<b>$num_vocab_items</b> vocab items total");
+			?> 
+			<!--<label title="toggle vocab you marked as memorized"><input type="checkbox" name="toggleMemorized" value=""<?=$ch_mem?> onchange="document.location='/vocab.php?tag=<?=urlencode($_GET['tag']).($view == "flashcards" ? '&view=flashcards' : '')?>&showmemorized='+( $(this).is(':checked') ? 'true' : 'false' );"/>Show Memorized</label> <span style="color:black;">&middot;</span> -->
+			&nbsp;
+			Sort by 
+			<select onchange="document.location='/vocab.php?tag=<?=$tag?>&view=<?=$view?>&sort='+this.options[this.selectedIndex].value;">
+				<option value="" <?=(!$sort ? 'selected="selected"' : '')?>>difficulty</option>
+				<option value="added_desc" <?=($sort == "added_desc" ? 'selected="selected"' : '')?>>date added (recent first)</option>
+				<option value="added_asc" <?=($sort == "added_asc" ? 'selected="selected"' : '')?>>date added (oldest first)</option>
+				<option value="random" <?=($sort == "random" ? 'selected="selected"' : '')?>>random</option>
+			</select>
+		</fieldset>
 
-<div id="vocablistsel">
-	<?
-	if($tag && !$slist) {
+		<?
+		$view = $view ? $view : "list";
+		$on[$view] = "sw-on";
+
 		?>
-		<div class="listdetails">
-			<form action="vocab.php" method="post">
-				<input type="hidden" name="action" value="edit_tag"/>
-				<input type="hidden" name="tag" value="<?=htmlSC($tag)?>"/>
-				<details>
-					<summary>List Details</summary>
-					<p>List name: <input type="text" name="listname" value="<?=htmlSC($tag)?>" size="25" maxlength="60"/></p>
-					<p><label><input type="checkbox" name="removelist" value="1"/> Delete this list (but keep all associated vocab)</label></p>
-					<input type="submit" name="edit_tag" value="Submit Changes"/>
-				</details>
-			</form>
+		<fieldset id="toggcontr">
+			<legend>Show</legend>
+			<ul>
+				<li>
+					<a href="/vocab.php?tag=<?=urlencode($tag)?>&sort=<?=$sort?>" class="<?=$on['list']?>">
+						<img src="/assets/img/mode_list.png" alt="list" title="list" border="0"/> 
+						<b>List</b>
+					</a>
+				</li>
+				<li>
+					<a href="/vocab.php?tag=<?=urlencode($tag)?>&view=flashcards&sort=<?=$sort?>" class="<?=$on['flashcards']?>">
+						<img src="/assets/img/mode_cards.png" alt="flash cards" title="flash cards" border="0"/>
+						<b>Flash Cards</b>
+					</a>
+				</li>
+				<li>
+					<span title="toggle Chinese characters" accesskey="h" class="controller">
+						<img src="/assets/img/key_h.png" alt="H" border="0" style="vertical-align:top;"/> 
+						<span class="sw sw-hz sw-on">汉字</span>
+					</span> 
+				</li>
+				<li>
+					<span title="toggle between traditional and simplified characters" accesskey="f" class="controller">
+						<img src="/assets/img/key_f.png" alt="F" border="0" style="vertical-align:top;"/> 
+						<span class="fjsw sw sw-fj" title="traditional characters">繁</span> <span class="fjsw sw sw-fj sw-on" title="simplified characters">简</span>
+					</span>
+				</li>
+				<li>
+					<span title="toggle phonetics (pinyin)" accesskey="p" class="controller">
+						<img src="/assets/img/key_p.png" alt="P" border="0" style="vertical-align:top;"/>
+						<span class="sw sw-py sw-on">拼音</span>
+					</span>
+				</li>
+				<li>
+					<span title="toggle definitions" accesskey="d" class="controller">
+						<img src="/assets/img/key_d.png" alt="D" border="0" style="vertical-align:top;"/> 
+						<span class="sw sw-df sw-on">Definitions</span>
+					</span>
+				</li>
+			</ul>
+		</fieldset>
+	</nav>
+
+	<?
+	if ($num_vocab_items) {
+		?>
+		<div class="vocablist">
+			<?
+			if($view == "flashcards") {
+				?>
+				<div class="fcards">
+					<a href="#prev" onclick="fcnav(-1);return false;" class="fcnav fcnav-prev"></a>
+					<a href="#next" onclick="fcnav(1);return false;" class="fcnav fcnav-next"></a>
+					<div id="fcards-container" class="fcards-container">
+						<div class="fcard">
+							<dl class="vocab">
+								<dd>
+									<p><b><?=($num_vocab_items)?></b> flash cards in this set.</p>
+									<div style="width:30px; margin:0 auto; background:green url(/assets/img/mark_check.png) no-repeat center center;">&nbsp;</div>
+									I know this one<br/>(decrease frequency of this card)<p></p>
+									<div style="width:30px; margin:0 auto; background:#e10909 url(/assets/img/mark_question.png) no-repeat center center;">&nbsp;</div>
+									I'm not too sure about this one<br/>(increase frequency)
+									<p><a href="#init" class="preventdefault" onclick="fcnav(1)">Begin session</a></p>
+								</dd>
+							</dl>
+						</div>
+						<?
+						foreach($rows as $i => $vocab) {
+							echo '<div class="fcard">';
+							$vocab->renderHTML($i + 1, $num_vocab_items);
+							echo '</div>';
+						}
+						?>
+						<div class="fcard">
+							<dl class="vocab">
+								<dd>
+									<p>You've reached the end of the flashcard set.</p>
+									<p><a href="#init" class="preventdefault" onclick="fcnav(0)">Go back to the beginning</a></p>
+								</dd>
+							</dl>
+						</div>
+					</div>
+				</div>
+				<?
+			} else {
+				//list
+				foreach($rows as $vocab) {
+					$vocab->renderHTML();
+				}
+				if($num_vocab_items == 50) echo '<div style="padding:3px 10px; font-size:18px; border:1px solid #DDD; background-color:#EEE;">Showing only the first 50 vocab entries. <b><a href="#loadvocab">Load all vocab</a></b></div>';
+			}
+			?>
 		</div>
 		<?
 	}
-	?>
-	<select onchange="document.location='/vocab.php?tag='+this.options[this.selectedIndex].value;">
-		<option value="">Special lists...</option>
-		<option value="">All Vocab</option>
-		<option value="_singlechars" <?=($tag == "_singlechars" ? 'selected="selected"' : '')?>>Single Characters</option>
-		<option value="_recent-1" <?=($tag == "_recent-1" ? 'selected="selected"' : '')?>>Recently Added: 1 day</option>
-		<option value="_recent-3" <?=($tag == "_recent-3" ? 'selected="selected"' : '')?>>Recently Added: 3 days</option>
-		<option value="_recent-7" <?=($tag == "_recent-7" ? 'selected="selected"' : '')?>>Recently Added: 7 days</option>
-		<option value="_recent-14" <?=($tag == "_recent-14" ? 'selected="selected"' : '')?>>Recently Added: 14 days</option>
-		<option value="_recent-30" <?=($tag == "_recent-30" ? 'selected="selected"' : '')?>>Recently Added: 30 days</option>
-	</select>
-</div>
-	
-<fieldset id="listcontrols">
-	<?=($tag ? '<b style="color:black;">'.$num_vocab_items.'</b> vocab item'.($num_vocab_items != 1 ? 's' : '').' in this list.' : '<b style="color:black;">'.$num_vocab_items.'</b> vocab items total.')?> &nbsp; 
-	<!--<label title="toggle vocab you marked as memorized"><input type="checkbox" name="toggleMemorized" value=""<?=$ch_mem?> onchange="document.location='/vocab.php?tag=<?=urlencode($_GET['tag']).($view == "flashcards" ? '&view=flashcards' : '')?>&showmemorized='+( $(this).is(':checked') ? 'true' : 'false' );"/>Show Memorized</label> <span style="color:black;">&middot;</span> -->
-	<?
-	if ($view == "flashcards") {
-		?>
-		<a href="/vocab.php?tag=<?=urlencode($tag)?>&sort=<?=$sort?>"><img src="/assets/img/mode_list.png" alt="list" title="list" border="0" style="vertical-align:middle; opacity:.3;"/></a> &nbsp; 
-		<img src="/assets/img/mode_cards.png" alt="flash cards" title="flash cards" border="0" style="vertical-align:middle;"/>
-		<?
-	} else {
-		?>
-		<img src="/assets/img/mode_list.png" alt="list" title="list" style="vertical-align:middle;"/> &nbsp; 
-		<a href="/vocab.php?tag=<?=urlencode($tag)?>&view=flashcards&sort=<?=$sort?>"><img src="/assets/img/mode_cards.png" alt="flash cards" title="flash cards" border="0" style="vertical-align:middle; opacity:.3;"/></a>
-		<?
-	}
-	?>
-	<p></p>
-	Sort by 
-	<select onchange="document.location='/vocab.php?tag=<?=$tag?>&view=<?=$view?>&sort='+this.options[this.selectedIndex].value;">
-		<option value="" <?=(!$sort ? 'selected="selected"' : '')?>>difficulty</option>
-		<option value="added_desc" <?=($sort == "added_desc" ? 'selected="selected"' : '')?>>date added (recent first)</option>
-		<option value="added_asc" <?=($sort == "added_asc" ? 'selected="selected"' : '')?>>date added (oldest first)</option>
-		<option value="random" <?=($sort == "random" ? 'selected="selected"' : '')?>>random</option>
-	</select>
-</fieldset>
 
-<fieldset id="toggcontr">
-	<legend>Toggle</legend>
-	<a href="#" title="toggle chinese characters" accesskey="h" class="preventdefault" onclick="$('.vocablist dt').toggleClass('toggle-vis');"><img src="/assets/img/key_h.png" alt="H" border="0" style="vertical-align:top;"/></a> <span class="sw sw-hz sw-on">汉字</span> &nbsp;&nbsp; 
-	<a href="#" title="toggle between traditional and simplified characters" accesskey="f" class="preventdefault" onclick="togglefj(); return false;"><img src="/assets/img/key_f.png" alt="F" border="0" style="vertical-align:top;"/></a> <span class="fjsw sw sw-fj" title="traditional characters">繁</span> &middot; <span class="fjsw sw sw-fj sw-on" title="simplified characters">简</span> &nbsp;&nbsp; 
-	<a href="#" title="toggle phonetics (pinyin)" accesskey="p" class="preventdefault" onclick="$('.vocablist dd.pinyin').toggleClass('toggle-vis');"><img src="/assets/img/key_p.png" alt="P" border="0" style="vertical-align:top;"/></a> <span class="sw sw-py sw-on">拼音</span> &nbsp;&nbsp; 
-	<a href="#" title="toggle definitions" accesskey="d" class="preventdefault" onclick="$('.vocablist dd.definitions').toggleClass('toggle-vis');"><img src="/assets/img/key_d.png" alt="D" border="0" style="vertical-align:top;"/></a> <span class="sw sw-df sw-on">Definitions</span>
-</fieldset>
-
-<?
-if ($num_vocab_items) {
 	?>
-	<div class="vocablist">
-		<?
-		if($view == "flashcards") {
-			?>
-			<div class="fcards">
-				<a href="#prev" onclick="fcnav(-1);return false;" class="fcnav fcnav-prev"></a>
-				<a href="#next" onclick="fcnav(1);return false;" class="fcnav fcnav-next"></a>
-				<div id="fcards-container" class="fcards-container">
-					<div class="fcard">
-						<dl class="vocab">
-							<dd>
-								<p><b><?=($num_vocab_items)?></b> flash cards in this set.</p>
-								<div style="width:30px; margin:0 auto; background:green url(/assets/img/mark_check.png) no-repeat center center;">&nbsp;</div>
-								I know this one<br/>(decrease frequency of this card)<p></p>
-								<div style="width:30px; margin:0 auto; background:#e10909 url(/assets/img/mark_question.png) no-repeat center center;">&nbsp;</div>
-								I'm not too sure about this one<br/>(increase frequency)
-								<p><a href="#init" class="preventdefault" onclick="fcnav(1)">Begin session</a></p>
-							</dd>
-						</dl>
-					</div>
-					<?
-					foreach($rows as $i => $vocab) {
-						echo '<div class="fcard">';
-						$vocab->renderHTML($i + 1, $num_vocab_items);
-						echo '</div>';
-					}
-					?>
-					<div class="fcard">
-						<dl class="vocab">
-							<dd>
-								<p>You've reached the end of the flashcard set.</p>
-								<p><a href="#init" class="preventdefault" onclick="fcnav(0)">Go back to the beginning</a></p>
-							</dd>
-						</dl>
-					</div>
-				</div>
-			</div>
-			<?
-		} else {
-			//list
-			foreach($rows as $vocab) {
-				$vocab->renderHTML();
-			}
-			if($num_vocab_items == 50) echo '<div style="padding:3px 10px; font-size:18px; border:1px solid #DDD; background-color:#EEE;">Showing only the first 50 vocab entries. <b><a href="#loadvocab">Load all vocab</a></b></div>';
-		}
-		?>
-	</div>
-	<?
-}
-
-?>
-</div><!-- .vocab-container -->
+</section><!-- .vocab-container -->
 <?
 
 include __DIR__."/../templates/page_footer.php";

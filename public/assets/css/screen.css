@@ -389,10 +389,13 @@ body, th, td {
   h1 a span {
     visibility: hidden; }
 
-  nav {
+  #header nav {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between; }
+    justify-content: space-between;
+    margin-top: -1em; }
+    #header nav > * {
+      margin-top: 1em; }
     #search {
       position: relative;
       margin-right: 1em; }
@@ -471,7 +474,7 @@ form {
 	margin: 0; }
 fieldset {
 	margin-left:0; margin-right:0;
-	padding:10px;
+	padding:1em;
 	font-family:Arial;
 	border: 1px solid #CCC; }
 legend {
@@ -580,13 +583,30 @@ big.hz, big .hz {
     #searchres header nav span::before {
       content: url(/assets/img/arrow-down-right.png); }
 
-.fjsw {
-	padding: 0 2px;
-}
-#toggcontr .sw:not(.sw-on) {
-  text-decoration: line-through; }
-#toggcontr .sw-on {
-	background-color: #FFFF9F; }
+#toggcontr {}
+  #toggcontr ul {
+    display: flex;
+    margin: 0 0 0 -1em; padding: 0; list-style: none; }
+  #toggcontr li {
+    margin: 0 0 0 1em; padding: 0; }
+  #toggcontr .sw:not(.sw-on) {
+    text-decoration: line-through; }
+  #toggcontr .sw-on {
+  	background-color: #FFFF9F; }
+  #toggcontr a {
+    text-decoration: none; }
+    #toggcontr a img {
+      vertical-align:middle;
+      opacity:.5; }
+    #toggcontr a.sw-on img {
+      opacity: 1; }
+    #toggcontr a b {
+      font-weight: normal;
+      text-decoration: underline;
+      color: #03c; }
+    #toggcontr a.sw-on b {
+      text-decoration: none;
+      color: black; }
 
 .vocab-container {}
   .vocab-container fieldset {

@@ -6,12 +6,6 @@ window.onbeforeunload = function() {
   if(confirm_exit) return "";
 }
 
-function togglefj(){
-	$(".vocablist dt .hz").toggle();
-	$("#toggcontr .fjsw").toggleClass("sw-on");
-	console.log("Toggle Hanzi style");
-}
-
 /**
  * Navigate flash cars
  * @param  {integer} increments A signed integer indicating number of positions to navigate
@@ -45,46 +39,42 @@ function fcnav(increments) {
 	
 }
 
+function toggleVocab(key) {
+	console.log("toggle vocab key:", key);
+	switch (key) {
+		case "h":
+			$(".vocablist dt").toggleClass("toggle-vis");
+			$("#toggcontr .sw-hz").toggleClass("sw-on");
+			break;
+		case "p":
+			$(".vocablist dd.pinyin").toggleClass("toggle-vis");
+			$("#toggcontr .sw-py").toggleClass("sw-on");
+			break;
+		case "d":
+			$(".vocablist dd.definitions").toggleClass("toggle-vis");
+			$("#toggcontr .sw-df").toggleClass("sw-on");
+			break;
+		case "f":
+			$(".vocablist dt .hz").toggle();
+			$("#toggcontr .fjsw").toggleClass("sw-on");
+			break;
+	}
+}
+
 $(document).ready(function(){
-	
-	$("input[type='button'], input[type='submit'], input[type='reset']").hover(
-		function(){
-			$(this).addClass("over");
-		}, function(){
-			$(this).removeClass("over");
-		}
-	).mousedown(function() {
-		$(this).addClass("down");
-	}).mouseup(function() {
-		$(this).removeClass("down");
-	}).mouseout(function() {
-		$(this).removeClass("down");
-	});
 	
 	$(".preventdefault").click(function(Ev) {
 		Ev.preventDefault();
 	});
-	
-	$("table.results tr").hover(
-		function(){
-			$(this).addClass('over');
-		}, function(){
-			$(this).removeClass('over');
-		}
-	);
-	
-	$("#nav > ul > li").hover(
-		function(){
-			$(this).children("ul").slideDown(200);
-		}, function(){
-			$(this).children("ul").slideUp(200);
-		}
-	);
 
 	$("#search-input").focus(function(){
 		$('#search-info').fadeIn();
 	}).blur(function(){
 		$('#search-info').animate({opacity:1}, 200, function(){ $(this).fadeOut(); });
+	});
+
+	$("#toggcontr .controller").click(function(){
+		toggleVocab( $(this).attr("accesskey") );
 	});
 
 	$(document).keydown(function(Ev) {
@@ -95,19 +85,13 @@ $(document).ready(function(){
 		
 		var k = Ev.keyCode;
 		if(k == 104 || k == 72) {
-			//h
-			$(".vocablist dt").toggleClass("toggle-vis");
-			$("#toggcontr .sw-hz").toggleClass("sw-on");
+			toggleVocab("h");
 		}
 		if(k == 80 || k == 112) {
-			//p
-			$(".vocablist dd.pinyin").toggleClass("toggle-vis");
-			$("#toggcontr .sw-py").toggleClass("sw-on");
+			toggleVocab("p");
 		}
 		if(k == 100 || k == 68) {
-			//d
-			$(".vocablist dd.definitions").toggleClass("toggle-vis");
-			$("#toggcontr .sw-df").toggleClass("sw-on");
+			toggleVocab("d");
 		}
 		if(k == 120 || k == 88) {
 			//x
@@ -118,8 +102,7 @@ $(document).ready(function(){
 			//toggleMemorized();
 		}
 		if(k == 102 || k == 70) {
-			//f
-			togglefj();
+			toggleVocab("f");
 		}
 		if(k == 37) {
 			//left
