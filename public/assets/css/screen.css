@@ -586,9 +586,12 @@ big.hz, big .hz {
 #toggcontr {}
   #toggcontr ul {
     display: flex;
-    margin: 0 0 0 -1em; padding: 0; list-style: none; }
+    flex-wrap: wrap;
+    margin: -0.5em; padding: 0; list-style: none; }
   #toggcontr li {
-    margin: 0 0 0 1em; padding: 0; }
+    margin: 0; padding: .5em; }
+  #toggcontr li.break {
+    width: 100%; }
   #toggcontr .sw:not(.sw-on) {
     text-decoration: line-through; }
   #toggcontr .sw-on {
@@ -607,6 +610,13 @@ big.hz, big .hz {
     #toggcontr a.sw-on b {
       text-decoration: none;
       color: black; }
+    #toggcontr img.kbd {
+      display: none;
+      vertical-align: top; }
+  @media (min-width: 640px) {
+    #toggcontr li.break { display: none; }
+    #toggcontr img.kbd { display: inline; }
+  }
 
 .vocab-container {}
   .vocab-container fieldset {
@@ -704,14 +714,14 @@ big.hz, big .hz {
       }
       .fcnav {
       	position: absolute;
-      	top: 10em;
+      	top: 0;
+        bottom: 0;
       	z-index: 1;
-      	width: 24px;
-      	height: 20px;
-      	background: url(/assets/img/key_left.png) no-repeat 0 0; }
-      .fcnav-prev {}
+      	width: 3em; }
+      .fcnav-prev {
+        background: url(/assets/img/key_left.png) no-repeat 0 10em; }
       .fcnav-next {
-      	background: url(/assets/img/key_right.png) no-repeat 0 0;
+      	background: url(/assets/img/key_right.png) no-repeat 100% 10em;
       	right: 0; }
       .fcards-container {
         position: relative;

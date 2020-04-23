@@ -483,29 +483,22 @@ include __DIR__."/../templates/page_header.php";
 						<b>Flash Cards</b>
 					</a>
 				</li>
-				<li>
-					<span title="toggle Chinese characters" accesskey="h" class="controller">
-						<img src="/assets/img/key_h.png" alt="H" border="0" style="vertical-align:top;"/> 
-						<span class="sw sw-hz sw-on">汉字</span>
-					</span> 
+				<li class="break"></li>
+				<li title="toggle Chinese characters" accesskey="h" class="controller">
+					<img src="/assets/img/key_h.png" alt="H" border="0" class="kbd"/> 
+					<span class="sw sw-hz sw-on">汉字</span>
 				</li>
-				<li>
-					<span title="toggle between traditional and simplified characters" accesskey="f" class="controller">
-						<img src="/assets/img/key_f.png" alt="F" border="0" style="vertical-align:top;"/> 
-						<span class="fjsw sw sw-fj" title="traditional characters">繁</span> <span class="fjsw sw sw-fj sw-on" title="simplified characters">简</span>
-					</span>
+				<li title="toggle between traditional and simplified characters" accesskey="f" class="controller">
+					<img src="/assets/img/key_f.png" alt="F" border="0" class="kbd"/> 
+					<span class="fjsw sw sw-fj" title="traditional characters">繁</span><span class="fjsw sw sw-fj sw-on" title="simplified characters">简</span>
 				</li>
-				<li>
-					<span title="toggle phonetics (pinyin)" accesskey="p" class="controller">
-						<img src="/assets/img/key_p.png" alt="P" border="0" style="vertical-align:top;"/>
-						<span class="sw sw-py sw-on">拼音</span>
-					</span>
+				<li title="toggle phonetics (pinyin)" accesskey="p" class="controller">
+					<img src="/assets/img/key_p.png" alt="P" border="0" class="kbd"/>
+					<span class="sw sw-py sw-on">拼音</span>
 				</li>
-				<li>
-					<span title="toggle definitions" accesskey="d" class="controller">
-						<img src="/assets/img/key_d.png" alt="D" border="0" style="vertical-align:top;"/> 
-						<span class="sw sw-df sw-on">Definitions</span>
-					</span>
+				<li title="toggle definitions" accesskey="d" class="controller">
+					<img src="/assets/img/key_d.png" alt="D" border="0" class="kbd"/> 
+					<span class="sw sw-df sw-on">Definitions</span>
 				</li>
 			</ul>
 		</fieldset>
