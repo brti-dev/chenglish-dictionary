@@ -4,8 +4,6 @@ namespace Pced;
 
 use Pced\PrimezeroTools;
 
-require_once __DIR__."/../config/config_db.php";
-
 class Vocab {
 
     private $initialized = false;
