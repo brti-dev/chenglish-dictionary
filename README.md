@@ -1,6 +1,6 @@
 # Chenglish Dictionary
 
-An app for Chinese language learners. Includes a massive Chinese-English dictionary powered by [CC-CEDICT](http://cc-cedict.org/) with the additional function of creating, saving, producing, and managing highly functional vocabulary lists for personal use and study.</b>
+An app for Chinese language learners. Includes a massive Chinese-English dictionary powered by [CC-CEDICT](http://cc-cedict.org/) with the additional function of creating, saving, producing, and managing highly functional vocabulary lists for personal use and study. [Read more](http://mattberti.squarehaven.com/work/chenglishdict/) about this app and why I made it.
 
 ## Built With
 
@@ -31,14 +31,14 @@ Contributions welcome!
 
 ## Todo
 
-* Beck end
-    * ~Convert mysql to pdo~
-    * ~Classes to manage db tables and app functions~
-        * ~User class~
-        * ~Vocab class~
-        * ~Zhongwen class~
-    * ~Guest user can begin vocab list without registering~
-    * API
+* Back end
+    * [x] ~Convert mysql to pdo~
+    * [x] ~Classes to manage db tables and app functions~
+        * [x] ~User class~
+        * [x] ~Vocab class~
+        * [x] ~Zhongwen class~
+    * [x] ~Guest user can begin vocab list without registering~
+    * [ ] REST API
 * Front end
-    * ~Responsive CSS~
-    * Flashcads swipe for mobile
+    * [x] ~Responsive mobile-first CSS~
+    * [ ] Flashcards swipe for mobile
